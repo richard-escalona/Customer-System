@@ -115,5 +115,32 @@ public class PersonGatewayDB {
         }
         return newId;
     }
+    public void updatePerson(Person person) throws PersonException {
+        if(person.getId() == Person.NEW_PERSON)
+            throw new PersonException("A new person must be inserted first.");
+
+        PreparedStatement st = null;
+        try {
+            st = connection.prepareStatement("update people set first_name = ?, last_name = ?, age = ?, birth_date = ? where id = ?",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+
+            st.setString(1, person.getFirstName());
+            st.setString(2,person.getLastName());
+            st.setInt(3, person.getAge());
+            st.setDate(4,java.sql.Date.valueOf(person.getDateOfBirth()));
+            st.setInt(5,person.getId());
+
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+            throw new PersonException(e1);
+        } finally {
+            try {
+                if(st != null)
+                    st.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
 
 }

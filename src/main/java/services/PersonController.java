@@ -141,4 +141,45 @@ public class PersonController {
 
             return new ResponseEntity<String>("Logged in", HttpStatus.valueOf(200));
         }
+    @PutMapping("/people/{personid}")
+    public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,
+                                               @PathVariable("personid") int personID, @RequestBody Person person){
+        String sessionToken = "";
+        Set<String> keys = headers.keySet();
+        for (String key : keys) {
+            if (key.equalsIgnoreCase("authorization"))
+                sessionToken = headers.get(key);
+        }
+        if (!sessionToken.equals("i am a session token")) {
+            logger.error("Authorization Failed.");
+            return new ResponseEntity<String>("", HttpStatus.valueOf(401));
+        }
+        JSONArray err = new JSONArray();
+        Boolean error = false;
+        // First Name and LastName be within 100 char
+
+        if(person.getFirstName().length() > 100){
+            error = true;
+            err.put("first name must be between 1 and 100 characters");
+            logger.error("first name must be between 1 and 100 characters");
+        }
+        if(person.getLastName().length() > 100){
+            error = true;
+            err.put("last name must be between 1 and 100 characters");
+            logger.error("last name must be between 1 and 100 characters");
+        }
+        // DOB must not be after today date
+        if(person.getDateOfBirth().isAfter(LocalDate.now())){
+            error = true;
+            err.put("Date of birth is after today's date.");
+            logger.error("Date of birth is after today's date.");
+        }
+        if (error == true) {
+            return new ResponseEntity<String>(err.toString(), HttpStatus.valueOf(400));
+        }
+        System.out.println(person.toString());
+        PersonGatewayDB gateway = new PersonGatewayDB(connection) ;
+        gateway.updatePerson(person);
+        return new ResponseEntity<String>(person.toString(), HttpStatus.valueOf(200));
+    }
 }
