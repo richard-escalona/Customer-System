@@ -143,7 +143,7 @@ public class PersonController {
         }
     @PutMapping("/people/{personid}")
     public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,
-                                               @PathVariable("personid") int personID, @RequestBody Person person){
+                                               @PathVariable("personid") int personID, @RequestBody Person personUpdate){
         String sessionToken = "";
         Set<String> keys = headers.keySet();
         for (String key : keys) {
@@ -154,6 +154,21 @@ public class PersonController {
             logger.error("Authorization Failed.");
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
+        Person person = new PersonGatewayDB(connection).fetchPerson(personID);
+
+        if(!(personUpdate.getFirstName() == null)){
+            person.setFirstName(personUpdate.getFirstName());
+        }
+        if(!(personUpdate.getLastName() == null)){
+            person.setLastName(personUpdate.getLastName());
+        }
+        if(!(personUpdate.getAge() == 0)){
+            person.setAge(personUpdate.getAge());
+        }
+        if (!(personUpdate.getDateOfBirth() == null)){
+            person.setDateOfBirth(personUpdate.getDateOfBirth());
+        }
+
         JSONArray err = new JSONArray();
         Boolean error = false;
         // First Name and LastName be within 100 char

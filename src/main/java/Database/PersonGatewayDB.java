@@ -129,6 +129,7 @@ public class PersonGatewayDB {
             st.setInt(3, person.getAge());
             st.setDate(4,java.sql.Date.valueOf(person.getDateOfBirth()));
             st.setInt(5,person.getId());
+            st.executeUpdate();
 
         } catch (SQLException e1) {
             e1.printStackTrace();
