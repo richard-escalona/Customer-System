@@ -1,5 +1,8 @@
 /mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/model/Person.java
 /mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/services/PersonController.java
+/mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/model/loginModel.java
+/mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/model/SessionToken.java
+/mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/services/ValidateCredential.java
 /mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/Database/DBConnect.java
 /mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/Database/PersonGatewayDB.java
 /mnt/c/Users/richa/IdeaProjects/assignment3/src/main/java/Database/PersonException.java

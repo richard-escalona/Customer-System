@@ -4,10 +4,11 @@ import Database.DBConnect;
 import Database.PersonException;
 import Database.PersonGatewayDB;
 import model.Person;
+import model.SessionToken;
+import model.loginModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.Period;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +27,8 @@ import java.util.Set;
 public class PersonController {
     private static final Logger logger = LogManager.getLogger();
     private Connection connection;
+    private String token;
+    private String sessionToken(){ return token; }
 
     // create a connection on startup
     @PostConstruct
@@ -53,7 +54,30 @@ public class PersonController {
         }
     }
 
-    @GetMapping("/people/{personid}")
+
+    @PostMapping("/logins")
+    public ResponseEntity<String> login(@RequestHeader Map<String, String> headers, @RequestBody loginModel login) {
+
+        if(login.getUser_name() == null || login.getPassword() == null){
+            logger.error("Can not enter null values");
+            return new ResponseEntity<String>("", HttpStatus.valueOf(400));
+        }
+        try{
+            loginModel credentialDB = new PersonGatewayDB(connection).fetchUser(login.getUser_name());
+
+            ValidateCredential validcred = new ValidateCredential();
+            if(!validcred.ValidateCredential(login,credentialDB)){
+                return new ResponseEntity<String>("", HttpStatus.valueOf(400));
+            }
+            token = validcred.generateNewToken();
+            return new ResponseEntity<String>(token, HttpStatus.valueOf(200));
+        } catch (PersonException e){
+            ResponseEntity<String> response = new ResponseEntity<String>("Not able to the user name", HttpStatus.valueOf(404));
+            return response;
+        }
+    }
+
+        @GetMapping("/people/{personid}")
     public Object fetchPerson(@RequestHeader Map<String, String> headers,
                               @PathVariable("personid") int personID) {
         String sessionToken = "";
@@ -65,7 +89,7 @@ public class PersonController {
         if (!sessionToken.equals("i am a session token")) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
-        // create the gateway and fetch the dog
+        // create the gateway and fetch the person
         try {
             Person person = new PersonGatewayDB(connection).fetchPerson(personID);
             JSONArray array = new JSONArray();
@@ -139,7 +163,7 @@ public class PersonController {
             int id_returned  = new PersonGatewayDB(connection).insertPerson(person);
             person.setId(id_returned);
 
-            return new ResponseEntity<String>("Logged in", HttpStatus.valueOf(200));
+            return new ResponseEntity<String>("", HttpStatus.valueOf(200));
         }
     @PutMapping("/people/{personid}")
     public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,

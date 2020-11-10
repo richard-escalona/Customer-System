@@ -1,6 +1,8 @@
 package Database;
 
 import model.Person;
+import model.loginModel;
+import org.hibernate.annotations.SQLUpdate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,6 +39,35 @@ public class PersonGatewayDB {
             //e1.printStackTrace();
             throw new PersonException(e1);
         } finally {
+            try {
+                if (rows != null)
+                    rows.close();
+                if (st != null)
+                    st.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+    //This method is to get a user for log in
+    public loginModel fetchUser(String username){
+        PreparedStatement st = null;
+        ResultSet rows = null;
+        try{
+            st = connection.prepareStatement("select * from login where user_name = ?",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+
+            st.setString(1,username);
+            rows= st.executeQuery();
+            rows.first();
+
+            loginModel credentials = new loginModel(rows.getString("user_name"), rows.getString("password"));
+
+            return credentials;
+
+        }catch (SQLException e1){
+            throw  new PersonException(e1);
+        }finally {
             try {
                 if (rows != null)
                     rows.close();
@@ -143,5 +174,7 @@ public class PersonGatewayDB {
             }
         }
     }
+
+
 
 }
