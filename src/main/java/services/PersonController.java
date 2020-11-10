@@ -55,7 +55,7 @@ public class PersonController {
     }
 
 
-    @PostMapping("/logins")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@RequestHeader Map<String, String> headers, @RequestBody loginModel login) {
 
         if(login.getUser_name() == null || login.getPassword() == null){
@@ -70,7 +70,10 @@ public class PersonController {
                 return new ResponseEntity<String>("", HttpStatus.valueOf(400));
             }
             token = validcred.generateNewToken();
+            new PersonGatewayDB(connection).insertToken(token);
+
             return new ResponseEntity<String>(token, HttpStatus.valueOf(200));
+
         } catch (PersonException e){
             ResponseEntity<String> response = new ResponseEntity<String>("Not able to the user name", HttpStatus.valueOf(404));
             return response;
@@ -80,13 +83,8 @@ public class PersonController {
         @GetMapping("/people/{personid}")
     public Object fetchPerson(@RequestHeader Map<String, String> headers,
                               @PathVariable("personid") int personID) {
-        String sessionToken = "";
-        Set<String> keys = headers.keySet();
-        for (String key : keys) {
-            if (key.equalsIgnoreCase("authorization"))
-                sessionToken = headers.get(key);
-        }
-        if (!sessionToken.equals("i am a session token")) {
+
+        if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
         // create the gateway and fetch the person
@@ -101,15 +99,10 @@ public class PersonController {
             return response;
         }
     }
+
     @GetMapping("/people")
     public Object fetchPeople(@RequestHeader Map<String, String> headers) {
-        String sessionToken = "";
-        Set<String> keys = headers.keySet();
-        for (String key : keys) {
-            if (key.equalsIgnoreCase("authorization"))
-                sessionToken = headers.get(key);
-        }
-        if (!sessionToken.equals("i am a session token")) {
+        if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
         // create the gateway and all people
@@ -127,16 +120,9 @@ public class PersonController {
 
         @PostMapping("/people")
         public ResponseEntity<String> insert(@RequestHeader Map<String, String> headers, @RequestBody Person person){
-        String sessionToken = "";
-        Set<String> keys = headers.keySet();
-        for (String key : keys) {
-            if (key.equalsIgnoreCase("authorization"))
-                sessionToken = headers.get(key);
-        }
-        if (!sessionToken.equals("i am a session token")) {
-            logger.error("Authorization Failed.");
-            return new ResponseEntity<String>("", HttpStatus.valueOf(401));
-        }
+            if (!authorize(headers)) {
+                return new ResponseEntity<String>("", HttpStatus.valueOf(401));
+            }
             JSONArray err = new JSONArray();
             Boolean error = false;
            // First Name and LastName be within 100 char
@@ -168,14 +154,7 @@ public class PersonController {
     @PutMapping("/people/{personid}")
     public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,
                                                @PathVariable("personid") int personID, @RequestBody Person personUpdate){
-        String sessionToken = "";
-        Set<String> keys = headers.keySet();
-        for (String key : keys) {
-            if (key.equalsIgnoreCase("authorization"))
-                sessionToken = headers.get(key);
-        }
-        if (!sessionToken.equals("i am a session token")) {
-            logger.error("Authorization Failed.");
+        if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
         Person person = new PersonGatewayDB(connection).fetchPerson(personID);
@@ -221,4 +200,18 @@ public class PersonController {
         gateway.updatePerson(person);
         return new ResponseEntity<String>(person.toString(), HttpStatus.valueOf(200));
     }
+
+    public boolean authorize( Map<String, String> headers){
+        String sessionToken = "";
+        Set<String> keys = headers.keySet();
+        for (String key : keys) {
+            if (key.equalsIgnoreCase("authorization"))
+                sessionToken = headers.get(key);
+        }
+        if (!sessionToken.equals(sessionToken())) {
+            return false;
+        }
+        return true;
+    }
+
 }

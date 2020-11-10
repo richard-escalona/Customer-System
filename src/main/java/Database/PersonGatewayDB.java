@@ -54,7 +54,7 @@ public class PersonGatewayDB {
         PreparedStatement st = null;
         ResultSet rows = null;
         try{
-            st = connection.prepareStatement("select * from login where user_name = ?",
+            st = connection.prepareStatement("select * from users where user_name = ?",
                     PreparedStatement.RETURN_GENERATED_KEYS);
 
             st.setString(1,username);
@@ -72,6 +72,33 @@ public class PersonGatewayDB {
                 if (rows != null)
                     rows.close();
                 if (st != null)
+                    st.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    public void insertToken(String token) throws PersonException {
+        PreparedStatement st = null;
+        ResultSet newKeys = null;
+        try {
+            st = connection.prepareStatement("insert into session (token) values (?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+
+            st.setString(1, token);
+            st.executeUpdate();
+            newKeys = st.getGeneratedKeys();
+            newKeys.first();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+            throw new PersonException(e1);
+        } finally {
+            try {
+                if(newKeys != null) {
+                    newKeys.close();
+                }
+                if(st != null)
                     st.close();
             } catch (SQLException e2) {
                 e2.printStackTrace();
