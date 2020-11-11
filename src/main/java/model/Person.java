@@ -1,7 +1,6 @@
 package model;
 
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 /** this is the person class
@@ -11,48 +10,48 @@ import java.time.LocalDate;
  * **/
 public class Person {
     public static final int NEW_PERSON = 0;
-    String firstName;
-    String lastName;
-    LocalDate dateOfBirth;
+    String first_name;
+    String last_name;
+    LocalDate date_birth;
     int id;
     int age;
     /**
      * person constructor
      **/
 
-    public Person(int id, String firstName, String lastName, int age, LocalDate dateOfBirth){
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Person(int id, String first_name, String last_name, int age, LocalDate date_birth){
+        this.first_name = first_name;
+        this.last_name = last_name;
         this.id = id;
         this.age = age;
-        this.dateOfBirth = dateOfBirth;
+        this.date_birth = date_birth;
     }
     /**
      * allows you to retrieve persons lastname
      **/
-    public String getLastName() {
-        return lastName;
+    public String getLast_name() {
+        return last_name;
     }
     /**
      * allows you to set dob
      **/
-    public void setDateOfBirth(LocalDate dateOfBirth)
+    public void setDate_birth(LocalDate date_birth)
     {
-        this.dateOfBirth = dateOfBirth;
+        this.date_birth = date_birth;
     }
     /**
      * allows you to retrieve DOB
      **/
-    public LocalDate getDateOfBirth()
+    public LocalDate getDate_birth()
     {
-        return dateOfBirth;
+        return date_birth;
     }
 
     /**
      * allows you to setLastName
      **/
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     /**
@@ -84,19 +83,19 @@ public class Person {
     /**
      * allows you to retrieve firstname
      **/
-    public String getFirstName() {
-        return firstName;
+    public String getFirst_name() {
+        return first_name;
     }
 
     /**
      * allows you to set FristName
      **/
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
     public String toString()
     {
-        return "id:" + id +"  first_name:" + firstName + " " + "last_name:" + lastName +"  age:" +age+ "  dob:"+dateOfBirth;
+        return "id:" + id +"  first_name:" + first_name + " " + "last_name:" + last_name +"  age:" +age+ "  dob:"+ date_birth;
     }
 
 }

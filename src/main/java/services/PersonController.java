@@ -4,7 +4,6 @@ import Database.DBConnect;
 import Database.PersonException;
 import Database.PersonGatewayDB;
 import model.Person;
-import model.SessionToken;
 import model.loginModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +66,7 @@ public class PersonController {
 
             ValidateCredential validcred = new ValidateCredential();
             if(!validcred.ValidateCredential(login,credentialDB)){
-                return new ResponseEntity<String>("", HttpStatus.valueOf(400));
+                return new ResponseEntity<String>("", HttpStatus.valueOf(401));
             }
             token = validcred.generateNewToken();
             new PersonGatewayDB(connection).insertToken(token);
@@ -117,6 +116,23 @@ public class PersonController {
             return response;
         }
     }
+    @DeleteMapping("/people/{personid}")
+    public ResponseEntity<String> deletePerson (@RequestHeader Map<String, String> headers, @PathVariable("personid") int personID) {
+        if (!authorize(headers)) {
+            return new ResponseEntity<String>("", HttpStatus.valueOf(401));
+        }
+
+        try {
+            Person person = new PersonGatewayDB(connection).fetchPerson(personID);
+            new PersonGatewayDB(connection).deletePerson(person);
+            return new ResponseEntity<String>(HttpStatus.valueOf(200));
+
+        } catch (PersonException e) {
+            ResponseEntity<String> response = new ResponseEntity<String>( HttpStatus.valueOf(404));
+            return response;
+        }
+
+    }
 
         @PostMapping("/people")
         public ResponseEntity<String> insert(@RequestHeader Map<String, String> headers, @RequestBody Person person){
@@ -126,18 +142,18 @@ public class PersonController {
             JSONArray err = new JSONArray();
             Boolean error = false;
            // First Name and LastName be within 100 char
-            if(person.getFirstName().length() > 100){
+            if(person.getFirst_name().length() > 100){
                 error = true;
                 err.put("first name must be between 1 and 100 characters");
                 logger.error("first name must be between 1 and 100 characters");
             }
-            if(person.getLastName().length() > 100){
+            if(person.getLast_name().length() > 100){
                 error = true;
                 err.put("last name must be between 1 and 100 characters");
                 logger.error("last name must be between 1 and 100 characters");
             }
               // DOB must not be after today date
-            if(person.getDateOfBirth().isAfter(LocalDate.now())){
+            if(person.getDate_birth().isAfter(LocalDate.now())){
                 error = true;
                 err.put("Date of birth is after today's date.");
                 logger.error("Date of birth is after today's date.");
@@ -157,48 +173,52 @@ public class PersonController {
         if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
-        Person person = new PersonGatewayDB(connection).fetchPerson(personID);
+        try {
+            Person person = new PersonGatewayDB(connection).fetchPerson(personID);
+            if(!(personUpdate.getFirst_name() == null)){
+                person.setFirst_name(personUpdate.getFirst_name());
+            }
+            if(!(personUpdate.getLast_name() == null)){
+                person.setLast_name(personUpdate.getLast_name());
+            }
+            if(!(personUpdate.getAge() == 0)){
+                person.setAge(personUpdate.getAge());
+            }
+            if (!(personUpdate.getDate_birth() == null)){
+                person.setDate_birth(personUpdate.getDate_birth());
+            }
 
-        if(!(personUpdate.getFirstName() == null)){
-            person.setFirstName(personUpdate.getFirstName());
-        }
-        if(!(personUpdate.getLastName() == null)){
-            person.setLastName(personUpdate.getLastName());
-        }
-        if(!(personUpdate.getAge() == 0)){
-            person.setAge(personUpdate.getAge());
-        }
-        if (!(personUpdate.getDateOfBirth() == null)){
-            person.setDateOfBirth(personUpdate.getDateOfBirth());
-        }
+            JSONArray err = new JSONArray();
+            Boolean error = false;
+            // First Name and LastName be within 100 char
 
-        JSONArray err = new JSONArray();
-        Boolean error = false;
-        // First Name and LastName be within 100 char
+            if(person.getFirst_name().length() > 100){
+                error = true;
+                err.put("first name must be between 1 and 100 characters");
+                logger.error("first name must be between 1 and 100 characters");
+            }
+            if(person.getLast_name().length() > 100){
+                error = true;
+                err.put("last name must be between 1 and 100 characters");
+                logger.error("last name must be between 1 and 100 characters");
+            }
+            // DOB must not be after today date
+            if(person.getDate_birth().isAfter(LocalDate.now())){
+                error = true;
+                err.put("Date of birth is after today's date.");
+                logger.error("Date of birth is after today's date.");
+            }
+            if (error == true) {
+                return new ResponseEntity<String>(err.toString(), HttpStatus.valueOf(400));
+            }
+            System.out.println(person.toString());
+            PersonGatewayDB gateway = new PersonGatewayDB(connection) ;
+            gateway.updatePerson(person);
+            return new ResponseEntity<String>("", HttpStatus.valueOf(200));
+        } catch (PersonException e){
+            return new ResponseEntity<String>("", HttpStatus.valueOf(401));
 
-        if(person.getFirstName().length() > 100){
-            error = true;
-            err.put("first name must be between 1 and 100 characters");
-            logger.error("first name must be between 1 and 100 characters");
         }
-        if(person.getLastName().length() > 100){
-            error = true;
-            err.put("last name must be between 1 and 100 characters");
-            logger.error("last name must be between 1 and 100 characters");
-        }
-        // DOB must not be after today date
-        if(person.getDateOfBirth().isAfter(LocalDate.now())){
-            error = true;
-            err.put("Date of birth is after today's date.");
-            logger.error("Date of birth is after today's date.");
-        }
-        if (error == true) {
-            return new ResponseEntity<String>(err.toString(), HttpStatus.valueOf(400));
-        }
-        System.out.println(person.toString());
-        PersonGatewayDB gateway = new PersonGatewayDB(connection) ;
-        gateway.updatePerson(person);
-        return new ResponseEntity<String>(person.toString(), HttpStatus.valueOf(200));
     }
 
     public boolean authorize( Map<String, String> headers){

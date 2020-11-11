@@ -2,15 +2,12 @@ package Database;
 
 import model.Person;
 import model.loginModel;
-import org.hibernate.annotations.SQLUpdate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PersonGatewayDB {
@@ -115,6 +112,8 @@ public class PersonGatewayDB {
             rows = st.executeQuery();
             rows.first();
             List<Person> output = new ArrayList<>();
+            output.add(new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate()));
+
             while(rows.next()){
                 output.add(new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate()));
             }
@@ -145,10 +144,10 @@ public class PersonGatewayDB {
                     PreparedStatement.RETURN_GENERATED_KEYS);
 
             st.setInt(1, person.getId());
-            st.setString(2, person.getFirstName());
-            st.setString(3,person.getLastName());
+            st.setString(2, person.getFirst_name());
+            st.setString(3,person.getLast_name());
             st.setInt(4, person.getAge());
-            st.setDate(5,java.sql.Date.valueOf(person.getDateOfBirth()));
+            st.setDate(5,java.sql.Date.valueOf(person.getDate_birth()));
             st.executeUpdate();
             newKeys = st.getGeneratedKeys();
             newKeys.first();
@@ -173,6 +172,29 @@ public class PersonGatewayDB {
         }
         return newId;
     }
+    public void deletePerson(Person person) throws PersonException {
+        if(person.getId() == person.NEW_PERSON)
+            throw new PersonException("Not able to delete a non existing person");
+
+        PreparedStatement st = null;
+        try {
+            st = connection.prepareStatement("delete from people where id = ?",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            st.setInt(1, person.getId());
+            st.executeUpdate();
+
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+            throw new PersonException(e1);
+        } finally {
+            try {
+                if(st != null)
+                    st.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
     public void updatePerson(Person person) throws PersonException {
         if(person.getId() == Person.NEW_PERSON)
             throw new PersonException("A new person must be inserted first.");
@@ -182,10 +204,10 @@ public class PersonGatewayDB {
             st = connection.prepareStatement("update people set first_name = ?, last_name = ?, age = ?, birth_date = ? where id = ?",
                     PreparedStatement.RETURN_GENERATED_KEYS);
 
-            st.setString(1, person.getFirstName());
-            st.setString(2,person.getLastName());
+            st.setString(1, person.getFirst_name());
+            st.setString(2,person.getLast_name());
             st.setInt(3, person.getAge());
-            st.setDate(4,java.sql.Date.valueOf(person.getDateOfBirth()));
+            st.setDate(4,java.sql.Date.valueOf(person.getDate_birth()));
             st.setInt(5,person.getId());
             st.executeUpdate();
 
