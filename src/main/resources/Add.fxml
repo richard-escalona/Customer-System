@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainPane" prefHeight="462.0" prefWidth="699.0" style="-fx-background-color: #030307; -fx-background-radius: 10;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddPerson">
+    <children>
+        <VBox layoutX="4.0" layoutY="11.0" prefHeight="128.0" prefWidth="685.0" style="-fx-background-radius: 10;" styleClass="linear-grad" stylesheets="@CSS/application.css">
+            <children>
+                <Label alignment="CENTER" prefHeight="70.0" prefWidth="355.0" text="ADD A PROFILE" textFill="#fefffd">
+                    <font>
+                        <Font name="Bell MT" size="46.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets left="160.0" top="23.0" />
+                    </VBox.margin>
+                </Label>
+            </children></VBox>
+        <AnchorPane layoutX="7.0" layoutY="145.0" prefHeight="359.0" prefWidth="685.0" style="-fx-background-radius: 10; -fx-background-color: #141124;">
+         <children>
+            <Button fx:id="closeButton" layoutX="439.0" layoutY="95.0" mnemonicParsing="false" onAction="#addition" prefHeight="36.0" prefWidth="71.0" text="Save  Add" />
+            <Label layoutX="115.0" layoutY="44.0" prefHeight="25.0" prefWidth="71.0" text="First Name:" textFill="#f8f8f8" />
+            <Label layoutX="115.0" layoutY="82.0" prefHeight="25.0" prefWidth="71.0" text="Last Name:" textFill="#f8f8f8" />
+            <Label layoutX="115.0" layoutY="118.0" prefHeight="25.0" prefWidth="38.0" text="Age:" textFill="#f8f8f8" />
+            <Label layoutX="115.0" layoutY="155.0" prefHeight="25.0" prefWidth="38.0" text="id:" textFill="#f8f8f8" />
+            <TextField fx:id="firstName" layoutX="194.0" layoutY="44.0" promptText="only characters" />
+            <TextField fx:id="lastName" layoutX="194.0" layoutY="82.0" promptText="only characters" />
+            <TextField fx:id="age" layoutX="194.0" layoutY="118.0" promptText="1-150" />
+            <TextField fx:id="id" layoutX="194.0" layoutY="155.0" promptText="max num 2147483647" />
+            <DatePicker id="DOB" fx:id="DOB" layoutX="194.0" layoutY="192.0"  prefHeight="25.0" prefWidth="149.0" promptText="ex. 5/22/1990" />
+            <Label id="DOB" fx:id="dobtxt" layoutX="99.0" layoutY="192.0" prefHeight="25.0" prefWidth="71.0" text="Date of Birth:" textFill="#f8f8f8" />
+         </children></AnchorPane>
+    </children>
+</AnchorPane>

@@ -1,6 +1,6 @@
-package services;
+package backend.services;
 
-import model.loginModel;
+import backend.model.loginModel;
 
 import java.security.SecureRandom;
 import java.util.Base64;

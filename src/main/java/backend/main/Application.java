@@ -1,4 +1,4 @@
-package main;
+package backend.main;
 
 import java.util.Arrays;
 
@@ -12,8 +12,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan({"services"})
-@EntityScan("model")
+@ComponentScan({"backend/services"})
+@EntityScan("backend/model")
 @EnableJpaRepositories("orm.spring")
 public class Application {
 

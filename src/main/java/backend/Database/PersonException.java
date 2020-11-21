@@ -1,4 +1,4 @@
-package Database;
+package backend.Database;
 
 public class PersonException extends RuntimeException{
     public PersonException(Exception e) {

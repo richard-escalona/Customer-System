@@ -1,4 +1,4 @@
-package Database;
+package backend.Database;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 

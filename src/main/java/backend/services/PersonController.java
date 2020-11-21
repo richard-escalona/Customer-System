@@ -1,10 +1,8 @@
-package services;
+package backend.services;
 
-import Database.DBConnect;
-import Database.PersonException;
-import Database.PersonGatewayDB;
-import model.Person;
-import model.loginModel;
+import backend.Database.*;
+import backend.Database.PersonGatewayDB;
+import backend.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -55,8 +53,8 @@ public class PersonController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestHeader Map<String, String> headers, @RequestBody loginModel login) {
-
+    public ResponseEntity<String> login(@RequestBody loginModel login) {
+        System.out.println("**********************************************************************************");
         if(login.getUser_name() == null || login.getPassword() == null){
             logger.error("Can not enter null values");
             return new ResponseEntity<String>("", HttpStatus.valueOf(400));
@@ -70,11 +68,12 @@ public class PersonController {
             }
             token = validcred.generateNewToken();
             new PersonGatewayDB(connection).insertToken(token);
+            System.out.println(token);
 
             return new ResponseEntity<String>(token, HttpStatus.valueOf(200));
 
         } catch (PersonException e){
-            ResponseEntity<String> response = new ResponseEntity<String>("Not able to the user name", HttpStatus.valueOf(404));
+            ResponseEntity<String> response = new ResponseEntity<String>("Not able find the user name", HttpStatus.valueOf(404));
             return response;
         }
     }

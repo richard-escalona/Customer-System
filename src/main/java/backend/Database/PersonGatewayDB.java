@@ -1,7 +1,7 @@
-package Database;
+package backend.Database;
 
-import model.Person;
-import model.loginModel;
+import backend.model.*;
+//import backend.model.loginModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
