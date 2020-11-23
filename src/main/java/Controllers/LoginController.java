@@ -1,4 +1,5 @@
 package Controllers;
+import backend.Database.PersonGatewayDB;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -33,6 +34,8 @@ import backend.model.*;
 import backend.services.*;
 import org.springframework.http.ResponseEntity;
 
+import javax.swing.text.View;
+
 
 public class LoginController implements Initializable {
     private static final Logger logger = LogManager.getLogger(ListViewController.class);
@@ -52,28 +55,28 @@ public class LoginController implements Initializable {
     public void handle1(ActionEvent event) throws IOException {
         String username = txt2.getText();
         String password = txt1.getText();
-        loginModel model = new loginModel(username,password);
-        HttpPost httpPost = new HttpPost("http://localhost:8080/login");
-        CloseableHttpClient httpclient = null;
-
-        httpclient = HttpClients.createDefault();
-        // assemble credentials into a JSON encoded string
-        JSONObject requestJson = new JSONObject();
-        //--------------------------------------------------------------------------------
-        // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
-        requestJson.put("user_name", username);
-        requestJson.put("password", password);
-        String updateString = requestJson.toString();
-        StringEntity stringEntity = new StringEntity(updateString);
-        httpPost.setEntity(stringEntity);
-        httpPost.addHeader("content-type", "application/json");
+//        loginModel model = new loginModel(username,password);
+//        HttpPost httpPost = new HttpPost("http://localhost:8080/login");
+//        CloseableHttpClient httpclient = null;
+//
+//        httpclient = HttpClients.createDefault();
+//        // assemble credentials into a JSON encoded string
+//        JSONObject requestJson = new JSONObject();
+//        //--------------------------------------------------------------------------------
+//        // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
+//        requestJson.put("user_name", username);
+//        requestJson.put("password", password);
+//        String updateString = requestJson.toString();
+//        StringEntity stringEntity = new StringEntity(updateString);
+//        httpPost.setEntity(stringEntity);
+//        httpPost.addHeader("content-type", "application/json");
         try{
-
-            httpclient.execute(httpPost);
-            //System.out.println(val);
+            SessionGateway session = new SessionGateway();
+            String tok = session.loginVerification(username,password);
+            ViewSwitcher.getInstance().sessionID(tok);
             logger.info("<{}>LOGGED IN", txt2.getText());
-            //ViewSwitcher.globalAction = event;
-           // ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
+            ViewSwitcher.globalAction = event;
+            ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }catch (Exception e){
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Not able to authenticate.\n Please try again.");
@@ -85,7 +88,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        txt2.setText("ragnar");
-        txt1.setText("flapjacks");
+        txt2.setText("user");
+        txt1.setText("name");
     }
 }

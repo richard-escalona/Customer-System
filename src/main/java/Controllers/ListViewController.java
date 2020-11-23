@@ -10,6 +10,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import backend.model.Person;
 
 import java.io.IOException;
 import java.net.URL;
@@ -18,11 +19,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ListViewController implements Initializable {
+
+    //public static String token;
     private static final Logger logger = LogManager.getLogger(ListViewController.class);
     @FXML
     private Button update;
 
-    public List<Person> people =  ViewSwitcher.getInstance().peopleFetch();
+    public List<Person> people  = ViewSwitcher.getInstance().peopleFetch();
+    //public List<Person> people = ViewSwitcher.getInstance().getPeople();
     @FXML
     public ListView<Person> listview;
     public ObservableList<Person> person=
@@ -49,8 +53,8 @@ public class ListViewController implements Initializable {
     public void setOnMouseClicked(MouseEvent event) {
         if (event.getClickCount() == 2){
             selectedIndex = listview.getSelectionModel().getSelectedIndex();
-            String fName = person.get(selectedIndex).firstName;
-            String lName = person.get(selectedIndex).lastName;
+            String fName = person.get(selectedIndex).getFirst_name();
+            String lName = person.get(selectedIndex).getLast_name();
             logger.info("READING <" + fName + " " + lName + ">");
             update.fire();
         }
@@ -89,11 +93,11 @@ public class ListViewController implements Initializable {
     public void removeHandle(ActionEvent event) {
 
        try {
-           String fName = person.get(selectedIndex).firstName;
-           String lName = person.get(selectedIndex).lastName;
+           String fName = person.get(selectedIndex).getFirst_name();
+           String lName = person.get(selectedIndex).getLast_name();
            logger.info("DELETING <" + fName + " " + lName + ">");
-           PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
-           pg.deletePerson(person.get(selectedIndex));
+           //PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
+           //pg.deletePerson(person.get(selectedIndex));
        }
        catch (Exception e)
        {

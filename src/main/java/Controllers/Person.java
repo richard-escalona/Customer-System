@@ -103,11 +103,11 @@ public class Person {
         // determine if I am a new record or not. call add if new, otherwise update
         if(getId() == NEW_PERSON) {
             // insert
-            int newId = pg.insertPerson(this);
-            this.setId(newId);
+         //   int newId = pg.insertPerson(this);
+         //   this.setId(newId);
         } else {
             // update
-            pg1.Update(this);
+          //  pg1.Update(this);
         }
     }
 

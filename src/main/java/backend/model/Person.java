@@ -12,19 +12,19 @@ public class Person {
     public static final int NEW_PERSON = 0;
     String first_name;
     String last_name;
-    LocalDate date_birth;
+    LocalDate birth_date;
     int id;
     int age;
     /**
      * person constructor
      **/
 
-    public Person(int id, String first_name, String last_name, int age, LocalDate date_birth){
+    public Person(int id, String first_name, String last_name, int age, LocalDate birth_date){
         this.first_name = first_name;
         this.last_name = last_name;
         this.id = id;
         this.age = age;
-        this.date_birth = date_birth;
+        this.birth_date = birth_date;
     }
     /**
      * allows you to retrieve persons lastname
@@ -35,16 +35,16 @@ public class Person {
     /**
      * allows you to set dob
      **/
-    public void setDate_birth(LocalDate date_birth)
+    public void setBirth_date(LocalDate birth_date)
     {
-        this.date_birth = date_birth;
+        this.birth_date = birth_date;
     }
     /**
      * allows you to retrieve DOB
      **/
-    public LocalDate getDate_birth()
+    public LocalDate getBirth_date()
     {
-        return date_birth;
+        return birth_date;
     }
 
     /**
@@ -95,7 +95,7 @@ public class Person {
     }
     public String toString()
     {
-        return "id:" + id +"  first_name:" + first_name + " " + "last_name:" + last_name +"  age:" +age+ "  dob:"+ date_birth;
+        return "id:" + id +"  first_name:" + first_name + " " + "last_name:" + last_name +"  age:" +age+ "  dob:"+ birth_date;
     }
 
 }

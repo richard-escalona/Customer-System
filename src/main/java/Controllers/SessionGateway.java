@@ -35,12 +35,11 @@ public class SessionGateway {
         CloseableHttpClient httpclient = null;
 
         // 1. authenticate and get back session token
-
         httpclient = HttpClients.createDefault();
 
         // assemble credentials into a JSON encoded string
         JSONObject credentials = new JSONObject();
-        credentials.put("username", username);
+        credentials.put("user_name", username);
         credentials.put("password", password);
         String credentialsString = credentials.toString();
         logger.info("credentials: " + credentialsString);
@@ -79,7 +78,7 @@ public class SessionGateway {
         String token = null;
         try {
             JSONObject responseJSON = new JSONObject(responseString);
-            token = responseJSON.getString("session_id");
+            token = responseJSON.getString("token");
 
         } catch (Exception e) {
             logger.error("could not get session token: " + e.getMessage());

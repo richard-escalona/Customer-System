@@ -146,11 +146,11 @@ public class UpdateProfile implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        firstName.setText(person.people.get(ListViewController.selectedIndex).firstName);
-        lastName.setText(person.people.get(ListViewController.selectedIndex).lastName);
-        age.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).age));
-        id.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).id));
-        DOB.setValue(person.people.get(ListViewController.selectedIndex).dateOfBirth);
+        firstName.setText(person.people.get(ListViewController.selectedIndex).getFirst_name());
+        lastName.setText(person.people.get(ListViewController.selectedIndex).getLast_name());
+        age.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).getAge()));
+        id.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).getId()));
+        DOB.setValue(person.people.get(ListViewController.selectedIndex).getBirth_date());
 
     }
 }

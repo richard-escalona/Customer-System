@@ -1,5 +1,6 @@
 package backend.Database;
 
+import Controllers.ViewSwitcher;
 import backend.model.*;
 //import backend.model.loginModel;
 
@@ -12,6 +13,8 @@ import java.util.List;
 
 public class PersonGatewayDB {
     private Connection connection;
+    public String toke;
+    public PersonGatewayDB(){}
 
     public PersonGatewayDB(Connection connection) {
         this.connection = connection;
@@ -46,6 +49,39 @@ public class PersonGatewayDB {
             }
         }
     }
+
+
+    public String getKey(){
+        PreparedStatement st = null;
+        ResultSet rows = null;
+        try{
+            st = connection.prepareStatement("SELECT * FROM `session` ORDER BY `id` DESC LIMIT 1",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+
+
+            rows= st.executeQuery();
+            rows.first();
+
+            String credentials = rows.getString("token");
+
+            return credentials;
+
+        }catch (SQLException e1){
+            throw  new PersonException(e1);
+        }finally {
+            try {
+                if (rows != null)
+                    rows.close();
+                if (st != null)
+                    st.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+
+
     //This method is to get a user for log in
     public loginModel fetchUser(String username){
         PreparedStatement st = null;
@@ -79,6 +115,10 @@ public class PersonGatewayDB {
     public void insertToken(String token) throws PersonException {
         PreparedStatement st = null;
         ResultSet newKeys = null;
+
+        toke = token;
+
+
         try {
             st = connection.prepareStatement("insert into session (token) values (?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
@@ -102,6 +142,9 @@ public class PersonGatewayDB {
             }
         }
     }
+
+
+
 
     public List<Person> fetchPeople() {
         PreparedStatement st = null;
@@ -147,7 +190,7 @@ public class PersonGatewayDB {
             st.setString(2, person.getFirst_name());
             st.setString(3,person.getLast_name());
             st.setInt(4, person.getAge());
-            st.setDate(5,java.sql.Date.valueOf(person.getDate_birth()));
+            st.setDate(5,java.sql.Date.valueOf(person.getBirth_date()));
             st.executeUpdate();
             newKeys = st.getGeneratedKeys();
             newKeys.first();
@@ -207,7 +250,7 @@ public class PersonGatewayDB {
             st.setString(1, person.getFirst_name());
             st.setString(2,person.getLast_name());
             st.setInt(3, person.getAge());
-            st.setDate(4,java.sql.Date.valueOf(person.getDate_birth()));
+            st.setDate(4,java.sql.Date.valueOf(person.getBirth_date()));
             st.setInt(5,person.getId());
             st.executeUpdate();
 

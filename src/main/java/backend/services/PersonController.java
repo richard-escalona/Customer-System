@@ -1,11 +1,15 @@
 package backend.services;
 
-import backend.Database.*;
+import Controllers.ViewSwitcher;
+import backend.Database.DBConnect;
+import backend.Database.PersonException;
 import backend.Database.PersonGatewayDB;
-import backend.model.*;
+import backend.model.Person;
+import backend.model.loginModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +29,7 @@ public class PersonController {
     private static final Logger logger = LogManager.getLogger();
     private Connection connection;
     private String token;
-    private String sessionToken(){ return token; }
+    public String sessionToken(){ return token; }
 
     // create a connection on startup
     @PostConstruct
@@ -54,7 +58,7 @@ public class PersonController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody loginModel login) {
-        System.out.println("**********************************************************************************");
+
         if(login.getUser_name() == null || login.getPassword() == null){
             logger.error("Can not enter null values");
             return new ResponseEntity<String>("", HttpStatus.valueOf(400));
@@ -66,11 +70,14 @@ public class PersonController {
             if(!validcred.ValidateCredential(login,credentialDB)){
                 return new ResponseEntity<String>("", HttpStatus.valueOf(401));
             }
-            token = validcred.generateNewToken();
-            new PersonGatewayDB(connection).insertToken(token);
-            System.out.println(token);
 
-            return new ResponseEntity<String>(token, HttpStatus.valueOf(200));
+          token = validcred.generateNewToken();
+            JSONObject obj = new JSONObject();
+            obj.put("token",token);
+            new PersonGatewayDB(connection).insertToken(token);
+
+
+            return new ResponseEntity<String>(obj.toString(), HttpStatus.valueOf(200));
 
         } catch (PersonException e){
             ResponseEntity<String> response = new ResponseEntity<String>("Not able find the user name", HttpStatus.valueOf(404));
@@ -101,13 +108,15 @@ public class PersonController {
     @GetMapping("/people")
     public Object fetchPeople(@RequestHeader Map<String, String> headers) {
         if (!authorize(headers)) {
-            return new ResponseEntity<String>("", HttpStatus.valueOf(401));
+            return new ResponseEntity<String>(" ", HttpStatus.valueOf(401));
         }
         // create the gateway and all people
         try {
-            List people = new PersonGatewayDB(connection).fetchPeople();
-            JSONArray array = new JSONArray();
-            array.put(people);
+            List<Person> people = new PersonGatewayDB(connection).fetchPeople();
+
+            JSONArray array = new JSONArray(people);
+
+            System.out.println("ARRRRRRRRRRRRRRR" + array);
             return new ResponseEntity<String>(array.toString(), HttpStatus.valueOf(200));
 
         } catch (PersonException e) {
@@ -152,7 +161,7 @@ public class PersonController {
                 logger.error("last name must be between 1 and 100 characters");
             }
               // DOB must not be after today date
-            if(person.getDate_birth().isAfter(LocalDate.now())){
+            if(person.getBirth_date().isAfter(LocalDate.now())){
                 error = true;
                 err.put("Date of birth is after today's date.");
                 logger.error("Date of birth is after today's date.");
@@ -183,8 +192,8 @@ public class PersonController {
             if(!(personUpdate.getAge() == 0)){
                 person.setAge(personUpdate.getAge());
             }
-            if (!(personUpdate.getDate_birth() == null)){
-                person.setDate_birth(personUpdate.getDate_birth());
+            if (!(personUpdate.getBirth_date() == null)){
+                person.setBirth_date(personUpdate.getBirth_date());
             }
 
             JSONArray err = new JSONArray();
@@ -202,7 +211,7 @@ public class PersonController {
                 logger.error("last name must be between 1 and 100 characters");
             }
             // DOB must not be after today date
-            if(person.getDate_birth().isAfter(LocalDate.now())){
+            if(person.getBirth_date().isAfter(LocalDate.now())){
                 error = true;
                 err.put("Date of birth is after today's date.");
                 logger.error("Date of birth is after today's date.");
@@ -224,13 +233,16 @@ public class PersonController {
         String sessionToken = "";
         Set<String> keys = headers.keySet();
         for (String key : keys) {
-            if (key.equalsIgnoreCase("authorization"))
+            if (key.equalsIgnoreCase("Authorization"))
                 sessionToken = headers.get(key);
         }
-        if (!sessionToken.equals(sessionToken())) {
+
+        if (!sessionToken.equals(sessionToken)) {
             return false;
         }
         return true;
     }
+
+
 
 }

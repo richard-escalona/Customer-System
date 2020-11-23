@@ -1,5 +1,5 @@
 package Controllers;
-
+import backend.model.Person;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -35,9 +35,10 @@ public class PersonGateway {
             // specify Authorization header
             request.setHeader("Authorization", sessionId);
             String response = waitForResponseAsString(request);
+            System.out.println( response);
             for(Object obj : new JSONArray(response)) {
                 JSONObject jsonObject = (JSONObject) obj;
-                people.add(new Person(jsonObject.getString("firstName"), jsonObject.getString("lastName"), jsonObject.getInt("id"),jsonObject.getInt("age"), LocalDate.parse((CharSequence) jsonObject.get("dob"))));
+                people.add(new Person(jsonObject.getInt("id"), jsonObject.getString("first_name"), jsonObject.getString("last_name"),jsonObject.getInt("age"), LocalDate.parse((CharSequence) jsonObject.get("birth_date"))));
             }
         } catch (Exception e) {
             throw new PersonExceptions(e);
@@ -61,7 +62,7 @@ public class PersonGateway {
         JSONObject requestJson = new JSONObject();
         //--------------------------------------------------------------------------------
         // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
-        requestJson.put("firstName", person.firstName);
+        requestJson.put("firstName", person.getFirst_name());
         String updateString = requestJson.toString();
         // TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1. Can add to ' + "/" + 1111 ' to wsURL.
         HttpPut httpPut = new HttpPut(wsURL);
@@ -102,9 +103,9 @@ public class PersonGateway {
         JSONObject requestJson = new JSONObject();
         //--------------------------------------------------------------------------------
         // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
-        requestJson.put("firstName", person.firstName);
-        requestJson.put("lastName", person.lastName);
-        requestJson.put("dateOfBirth", person.dateOfBirth);
+        requestJson.put("firstName", person.getFirst_name());
+        requestJson.put("lastName", person.getLast_name());
+        requestJson.put("dateOfBirth", person.getBirth_date());
         String updateString = requestJson.toString();
         HttpPost httpPost = new HttpPost(wsURL);
         //--------------------------------------------------------------------------------
@@ -147,7 +148,7 @@ public class PersonGateway {
         httpclient = HttpClients.createDefault();
         // TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1.
         //--------------------------------------------------------------------------------
-        HttpDelete httpDelete = new HttpDelete(wsURL + "/" + person.id);
+        HttpDelete httpDelete = new HttpDelete(wsURL + "/" + person.getId());
         System.out.println(httpDelete);
         //--------------------------------------------------------------------------------
         // TO TEST FOR 401 ERROR  --> change sessionID to the var seshtoken
@@ -186,6 +187,9 @@ public class PersonGateway {
     }
     private String parseResponseToString(CloseableHttpResponse response) throws IOException {
         HttpEntity entity = response.getEntity();
-        return EntityUtils.toString(entity, StandardCharsets.UTF_8);
+        String strResponse = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+        EntityUtils.consume(entity);
+
+        return strResponse;
     }
 }
