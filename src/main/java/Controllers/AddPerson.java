@@ -73,7 +73,7 @@ public class AddPerson implements Initializable {
             //check to see if we have to update or add person (depends on id #)
             person.save();
             System.out.println("this is the person ----> add " + firstname + lastname + idNum + ageNum + dob);
-            ListViewController.setAddition(firstname, lastname, 20, ageNum, dob);
+            ListViewController.setAddition(firstname, lastname, idNum, ageNum, dob);
             logger.info("CREATING <" + firstname +" "+  lastname + ">");
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }
