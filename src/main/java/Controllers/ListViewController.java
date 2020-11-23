@@ -68,7 +68,7 @@ public class ListViewController implements Initializable {
     }
 
     /**
-     * Adds a new person to the list view
+     * Adds a new person to the list viewe
      **/
     @FXML
     public void Add(ActionEvent event) throws IOException {
