@@ -54,7 +54,7 @@ public class ListViewController implements Initializable {
     }
 
     /**
-     * shows index of person/index you are at
+     * shows index of person/index you are ate
      **/
     public void setOnMouseClicked(MouseEvent event) {
         if (event.getClickCount() == 2){
