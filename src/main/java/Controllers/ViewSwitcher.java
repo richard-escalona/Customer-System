@@ -106,6 +106,12 @@ public static ActionEvent globalAction;
         PersonGateway pg = new PersonGateway("http://localhost:8080/people",this.getSessionid());
         pg.deletePerson(person);
     }
+    public void addPerson(Person person) throws IOException {
+        PersonGateway pg = new PersonGateway("http://localhost:8080/people",this.getSessionid());
+        System.out.println("the add person inside viewswitcher " + person);
+        pg.insertPerson(person);
+    }
+
 
 
 

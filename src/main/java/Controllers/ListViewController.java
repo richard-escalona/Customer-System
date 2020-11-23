@@ -44,8 +44,13 @@ public class ListViewController implements Initializable {
     /**
      * Adds a new person
      **/
-    public static void setAddition( String firstName, String lastName, int id, int age, LocalDate Dob){
-    //    person.add(new Person(firstName, lastName, id, age, Dob));
+    public static void setAddition( String firstName, String lastName, int id, int age, LocalDate Dob) throws IOException {
+      //  person.add(new Person(firstName, lastName, id, age, Dob));
+
+        ViewSwitcher.getInstance().addPerson(new Person(id, firstName, lastName, age, Dob));
+
+
+
     }
 
     /**
@@ -69,6 +74,7 @@ public class ListViewController implements Initializable {
     public void Add(ActionEvent event) throws IOException {
         ViewSwitcher.globalAction = event;
         ViewSwitcher.getInstance().switchView(ViewType.addPerson);
+
     }
 
     /**

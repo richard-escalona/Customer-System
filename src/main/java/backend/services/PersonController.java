@@ -150,6 +150,7 @@ public class PersonController {
             JSONArray err = new JSONArray();
             Boolean error = false;
            // First Name and LastName be within 100 char
+            System.out.println("did this worl " + person.getFirst_name());
             if(person.getFirst_name().length() > 100){
                 error = true;
                 err.put("first name must be between 1 and 100 characters");

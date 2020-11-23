@@ -95,37 +95,39 @@ public class PersonGateway {
      **************************************************************************************************************************************************/
     public int insertPerson(Person person) throws IOException {
         int respondID = 0;
-
+        System.out.println("inside person gatway, person : " + person);
         // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
         CloseableHttpResponse response = null;
         CloseableHttpClient httpclient = null;
-
         httpclient = HttpClients.createDefault();
         // assemble credentials into a JSON encoded string
+
         JSONObject requestJson = new JSONObject();
         //--------------------------------------------------------------------------------
         // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
-        requestJson.put("firstName", person.getFirst_name());
-        requestJson.put("lastName", person.getLast_name());
-        requestJson.put("dateOfBirth", person.getBirth_date());
+
+        System.out.println("this is the getter test: " + person.getFirst_name());
+        requestJson.put("first_name", person.getFirst_name());
+        requestJson.put("last_name", person.getLast_name());
+        requestJson.put("birth_date", person.getBirth_date());
         String updateString = requestJson.toString();
         HttpPost httpPost = new HttpPost(wsURL);
         //--------------------------------------------------------------------------------
-
+//        System.out.println("this is the updateString in insert pgatewayn" + updateString);
         httpPost.setHeader("Authorization", sessionId);
         StringEntity stringEntity = new StringEntity(updateString);
         httpPost.setEntity(stringEntity);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
-        System.out.println("Executing request " + httpPost.getRequestLine());
+//        System.out.println("Executing request " + httpPost.getRequestLine());
         response = httpclient.execute(httpPost);
-        String responseString = waitForResponseAsString(httpPost);
-        try {
-            JSONObject responseJSON = new JSONObject(responseString);
-            respondID = responseJSON.getInt("id");
-        }catch (Exception e){
-
-        }
+//        String responseString = waitForResponseAsString(httpPost);
+//        try {
+//            JSONObject responseJSON = new JSONObject(responseString);
+//            respondID = responseJSON.getInt("id");
+//        }catch (Exception e){
+//
+//        }
         //For testing
         if (response.getStatusLine().getStatusCode() == 200){
             System.out.println("Response Code: " + response.getStatusLine());

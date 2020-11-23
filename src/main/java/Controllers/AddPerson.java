@@ -63,7 +63,7 @@ public class AddPerson implements Initializable {
         validLastName = isValid(lastName.getText(), 3);
         validAge = isValid(age.getText(), 0);
 
-
+        System.out.println("inside the add person class ----->");
         if( !validName || !validLastName || dob.isAfter(LocalDate.now()) ) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Invalid input (check first name, last name, and DOB).\n Please try again.");
@@ -72,7 +72,8 @@ public class AddPerson implements Initializable {
         else {
             //check to see if we have to update or add person (depends on id #)
             person.save();
-            ListViewController.setAddition(firstname, lastname, idNum, ageNum, dob);
+            System.out.println("this is the person ----> add " + firstname + lastname + idNum + ageNum + dob);
+            ListViewController.setAddition(firstname, lastname, 20, ageNum, dob);
             logger.info("CREATING <" + firstname +" "+  lastname + ">");
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }
