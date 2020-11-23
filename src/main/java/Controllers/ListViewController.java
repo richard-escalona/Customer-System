@@ -1,5 +1,6 @@
 package Controllers;
 
+import com.fasterxml.jackson.databind.ser.VirtualBeanPropertyWriter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -95,8 +96,24 @@ public class ListViewController implements Initializable {
        try {
            String fName = person.get(selectedIndex).getFirst_name();
            String lName = person.get(selectedIndex).getLast_name();
+           //get the id
+           int personId = person.get(selectedIndex).getId();
+           System.out.println("duh" + people);
+           for(Person person : people)
+           {
+               if(person.getId() == personId)
+               {
+                   System.out.println(person);
+                   ViewSwitcher.getInstance().deletePerson(person);
+               }
+           }
+
+
+
+
+
            logger.info("DELETING <" + fName + " " + lName + ">");
-           //PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
+
            //pg.deletePerson(person.get(selectedIndex));
        }
        catch (Exception e)

@@ -102,6 +102,10 @@ public static ActionEvent globalAction;
         return people;
 
     }
+    public void deletePerson(Person person) throws IOException {
+        PersonGateway pg = new PersonGateway("http://localhost:8080/people",this.getSessionid());
+        pg.deletePerson(person);
+    }
 
 
 

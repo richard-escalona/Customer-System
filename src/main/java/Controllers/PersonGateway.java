@@ -27,6 +27,8 @@ public class PersonGateway {
         this.wsURL = url;
     }
 
+
+
     public ArrayList<Person> fetchPeople() {
         ArrayList<Person> people = new ArrayList<Person>();
 
@@ -148,6 +150,7 @@ public class PersonGateway {
         httpclient = HttpClients.createDefault();
         // TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1.
         //--------------------------------------------------------------------------------
+        System.out.println("inside delete");
         HttpDelete httpDelete = new HttpDelete(wsURL + "/" + person.getId());
         System.out.println(httpDelete);
         //--------------------------------------------------------------------------------
