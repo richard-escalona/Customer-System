@@ -241,7 +241,7 @@ public class PersonGatewayDB {
     public void updatePerson(Person person) throws PersonException {
         if(person.getId() == Person.NEW_PERSON)
             throw new PersonException("A new person must be inserted first.");
-
+        System.out.println("backend debug pgate update meth" + person.getId());
         PreparedStatement st = null;
         try {
             st = connection.prepareStatement("update people set first_name = ?, last_name = ?, age = ?, birth_date = ? where id = ?",

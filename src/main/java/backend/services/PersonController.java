@@ -199,6 +199,9 @@ public class PersonController {
             if (!(personUpdate.getBirth_date() == null)){
                 person.setBirth_date(personUpdate.getBirth_date());
             }
+            if (!(personUpdate.getId() == 0)){
+                person.setId(personUpdate.getId());
+            }
 
             JSONArray err = new JSONArray();
             Boolean error = false;
