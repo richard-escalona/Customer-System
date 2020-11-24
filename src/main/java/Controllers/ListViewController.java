@@ -104,9 +104,9 @@ public class ListViewController implements Initializable {
         }
     }
 
-    public static void UpdatePerson( String firstName, String lastName, int id, int age, LocalDate Dob) throws IOException {
+    public static void UpdatePerson( String firstName, String lastName, int id, int age, LocalDate Dob, int oldId) throws IOException {
         //  person.add(new Person(firstName, lastName, id, age, Dob));
-        ViewSwitcher.getInstance().updatePerson(new Person(id, firstName, lastName, age, Dob));
+        ViewSwitcher.getInstance().updatePerson(new Person(id, firstName, lastName, age, Dob), oldId);
 
 
 

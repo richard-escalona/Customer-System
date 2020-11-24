@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
 public class UpdateProfile implements Initializable {
     private static final Logger logger = LogManager.getLogger(ListViewController.class);
     String Age, ID, lastname, firstname, dateofBirth;
-    int idNum, ageNum, AGE;
+    int idNum, ageNum, AGE, oldId;
     boolean validAge, validName, validLastName, validId;
     ListViewController person = new ListViewController();
     @FXML
@@ -59,13 +59,9 @@ public class UpdateProfile implements Initializable {
         else {
             //check to see if we have to update or add person (depends on id #)
             person.save();
-            person.setFirstName(firstname);
-            person.setLastName(lastname);
-            person.setDateOfBirth(dob);
-            ListViewController.UpdatePerson(firstname,  lastname,  idNum,  ageNum,  dob);
 
-            logger.info("UPDATING <" + firstname +" "+  lastname + ">");
-
+            ListViewController.UpdatePerson(firstname,  lastname,  idNum,  ageNum,  dob, oldId);
+            logger.info("UPDATING <" + firstname +" "+  lastname + idNum+ ">");
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }
     }
@@ -156,6 +152,7 @@ public class UpdateProfile implements Initializable {
         lastName.setText(person.people.get(ListViewController.selectedIndex).getLast_name());
         age.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).getAge()));
         id.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).getId()));
+        oldId = person.people.get(ListViewController.selectedIndex).getId();
         DOB.setValue(person.people.get(ListViewController.selectedIndex).getBirth_date());
 
     }

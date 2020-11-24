@@ -54,7 +54,7 @@ public class PersonGateway {
      *  Invalid case: TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1. Can add to ' + "/" + 1111 ' to wsURL.
      *  Invalid case:  changing the session id to the variable seshtoken will result in a 401 not found response.
      *************************************************************************************************************************/
-    public void Update(Person person) throws IOException {
+    public void Update(Person person, int OldId) throws IOException {
         // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
         System.out.println("INSIDE UPDATE PERSON PGATEWAYYY " + person);
         CloseableHttpResponse response = null;
@@ -63,7 +63,7 @@ public class PersonGateway {
         httpclient = HttpClients.createDefault();
         // assemble credentials into a JSON encoded string
         JSONObject requestJson = new JSONObject();
-        HttpPut httpPut = new HttpPut(wsURL + "/" + person.getId());
+        HttpPut httpPut = new HttpPut(wsURL + "/" + OldId);
         //--------------------------------------------------------------------------------
         // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
         System.out.println(person.getId());
