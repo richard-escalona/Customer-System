@@ -81,14 +81,36 @@ public class ListViewController implements Initializable {
      * update the selected person if no one is selected it shows pop up message
      **/
     @FXML
-    public void updateHandle(ActionEvent event) {
+    public  void updateHandle(ActionEvent event) {
         try {
+            int personId = person.get(selectedIndex).getId();
+            for(Person person : people)
+            {
+                if(person.getId() == personId)
+                {
+
+                    System.out.println(person + "before change");
+                    person.setFirst_name(person.getFirst_name());
+                    System.out.println(person + "After change");
+
+
+                }
+            }
             ViewSwitcher.globalAction = event;
             ViewSwitcher.getInstance().switchView(ViewType.updatePerson);
         }
         catch(Exception e){
             AlertBox.display("Select a person ", "Nothing selected");
         }
+    }
+
+    public static void UpdatePerson( String firstName, String lastName, int id, int age, LocalDate Dob) throws IOException {
+        //  person.add(new Person(firstName, lastName, id, age, Dob));
+        ViewSwitcher.getInstance().updatePerson(new Person(id, firstName, lastName, age, Dob));
+
+
+
+
     }
 
     /**

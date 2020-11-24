@@ -56,27 +56,39 @@ public class PersonGateway {
      *************************************************************************************************************************/
     public void Update(Person person) throws IOException {
         // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
+        System.out.println("INSIDE UPDATE PERSON PGATEWAYYY " + person);
         CloseableHttpResponse response = null;
         CloseableHttpClient httpclient = null;
 
         httpclient = HttpClients.createDefault();
         // assemble credentials into a JSON encoded string
         JSONObject requestJson = new JSONObject();
+        HttpPut httpPut = new HttpPut(wsURL + "/" + person.getId());
         //--------------------------------------------------------------------------------
         // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
-        requestJson.put("firstName", person.getFirst_name());
+        System.out.println(person.getId());
+        requestJson.put("id", person.getId());
+        requestJson.put("first_name", person.getFirst_name());
+        requestJson.put("last_name", person.getLast_name());
+        requestJson.put("age", person.getAge());
+        requestJson.put("birth_date", person.getBirth_date());
+
+
         String updateString = requestJson.toString();
         // TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1. Can add to ' + "/" + 1111 ' to wsURL.
-        HttpPut httpPut = new HttpPut(wsURL);
+       // HttpPut httpPut = new HttpPut(wsURL);
+
         //--------------------------------------------------------------------------------
         // TO TEST FOR 401 ERROR  --> change sessionID to the var seshtoken
-        String seshtoken = "i am a sesh token";
+
         httpPut.setHeader("Authorization", sessionId);
         StringEntity stringEntity = new StringEntity(updateString);
+        System.out.println("String entity" + stringEntity);
         httpPut.setEntity(stringEntity);
-        response = httpclient.execute(httpPut);
         httpPut.setHeader("Accept", "application/json");
         httpPut.setHeader("Content-type", "application/json");
+        response = httpclient.execute(httpPut);
+
         System.out.println("Executing request " + response.getStatusLine());
 
         //For testing

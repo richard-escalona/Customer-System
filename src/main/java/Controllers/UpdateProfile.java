@@ -59,7 +59,13 @@ public class UpdateProfile implements Initializable {
         else {
             //check to see if we have to update or add person (depends on id #)
             person.save();
+            person.setFirstName(firstname);
+            person.setLastName(lastname);
+            person.setDateOfBirth(dob);
+            ListViewController.UpdatePerson(firstname,  lastname,  idNum,  ageNum,  dob);
+
             logger.info("UPDATING <" + firstname +" "+  lastname + ">");
+
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }
     }

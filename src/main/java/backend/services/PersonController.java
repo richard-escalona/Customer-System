@@ -179,6 +179,9 @@ public class PersonController {
     @PutMapping("/people/{personid}")
     public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,
                                                @PathVariable("personid") int personID, @RequestBody Person personUpdate){
+
+        System.out.println("in personController ___--------------??>>>>>>>>>>>>>>>> ");
+        System.out.println("this is the person update " + personUpdate);
         if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
