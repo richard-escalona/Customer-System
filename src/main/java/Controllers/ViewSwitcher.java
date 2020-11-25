@@ -83,6 +83,15 @@ public static ActionEvent globalAction;
                 window.setScene(scene);
                 window.show();
                 break;
+            case auditTrail:
+                url = new File("src/main/resources/audittrail.fxml").toURI().toURL();
+                rootPane = FXMLLoader.load(url);
+                scene = new Scene(rootPane);// pane you are GOING TO show
+                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();// pane
+                window.setScene(scene);
+                window.show();
+                break;
+
             default:
                 break;
         }

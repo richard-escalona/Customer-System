@@ -27,6 +27,7 @@
             <Button fx:id="Add" layoutX="483.0" layoutY="360.0" mnemonicParsing="false" onAction="#Add" prefHeight="37.0" prefWidth="121.0" text="Add Person" />
             <Button layoutX="483.0" layoutY="419.0" mnemonicParsing="false" onAction="#removeHandle" prefHeight="37.0" prefWidth="121.0" text="Delete Person" />
             <Button fx:id="update" layoutX="483.0" layoutY="300.0" mnemonicParsing="false" onAction="#updateHandle" prefHeight="37.0" prefWidth="121.0" text="Update Profile" />
+            <Button fx:id="update1" layoutX="483.0" layoutY="107.0" mnemonicParsing="false" onAction="#AuditTrail" prefHeight="37.0" prefWidth="121.0" text="AuditTrail" />
             </children></AnchorPane>
     </children>
 </AnchorPane>

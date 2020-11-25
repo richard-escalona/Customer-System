@@ -1,5 +1,5 @@
 package Controllers;
 
 public enum ViewType {
-	ListViewController, MainController,addPerson,updatePerson
+	ListViewController, MainController,addPerson,updatePerson, auditTrail
 }

@@ -77,6 +77,13 @@ public class ListViewController implements Initializable {
 
     }
 
+    @FXML
+    void AuditTrail(ActionEvent event) throws IOException {
+        System.out.println("hello world");
+        ViewSwitcher.globalAction = event;
+        ViewSwitcher.getInstance().switchView(ViewType.auditTrail);
+    }
+
     /**
      * update the selected person if no one is selected it shows pop up message
      **/

@@ -7,6 +7,7 @@ Controllers\AlertBox.class
 Controllers\ListViewController.class
 Controllers\LoginController.class
 Controllers\UpdateProfile.class
+Controllers\auditTrailController.class
 backend\Database\DBConnect.class
 backend\Database\PersonException.class
 backend\model\SessionToken.class
