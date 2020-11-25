@@ -65,6 +65,7 @@ public class SessionGateway {
         }
         if (response.getStatusLine().getStatusCode() != 200) {
             httpclient.close();
+            return "bad";
         }
         //If authentication is successful.
         if (response.getStatusLine().getStatusCode() == 200) {
