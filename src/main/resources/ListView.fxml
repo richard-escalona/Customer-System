@@ -23,11 +23,11 @@
             </children></VBox>
         <AnchorPane layoutY="146.0" prefHeight="545.0" prefWidth="1058.0" style="-fx-background-radius: 10; -fx-background-color: #141124;">
             <children>
-            <ListView fx:id="listview" layoutX="95.0" layoutY="68.0" onMouseClicked="#setOnMouseClicked" prefHeight="399.0" prefWidth="312.0" />
-            <Button fx:id="Add" layoutX="483.0" layoutY="360.0" mnemonicParsing="false" onAction="#Add" prefHeight="37.0" prefWidth="121.0" text="Add Person" />
-            <Button layoutX="483.0" layoutY="419.0" mnemonicParsing="false" onAction="#removeHandle" prefHeight="37.0" prefWidth="121.0" text="Delete Person" />
-            <Button fx:id="update" layoutX="483.0" layoutY="300.0" mnemonicParsing="false" onAction="#updateHandle" prefHeight="37.0" prefWidth="121.0" text="Update Profile" />
-            <Button fx:id="update1" layoutX="483.0" layoutY="107.0" mnemonicParsing="false" onAction="#AuditTrail" prefHeight="37.0" prefWidth="121.0" text="AuditTrail" />
+            <ListView fx:id="listview" layoutX="302.0" layoutY="34.0" onMouseClicked="#setOnMouseClicked" prefHeight="420.0" prefWidth="702.0" />
+            <Button fx:id="Add" layoutX="64.0" layoutY="254.0" mnemonicParsing="false" onAction="#Add" prefHeight="37.0" prefWidth="121.0" text="Add Person" />
+            <Button layoutX="64.0" layoutY="348.0" mnemonicParsing="false" onAction="#removeHandle" prefHeight="37.0" prefWidth="121.0" text="Delete Person" />
+            <Button fx:id="update" layoutX="64.0" layoutY="169.0" mnemonicParsing="false" onAction="#updateHandle" prefHeight="37.0" prefWidth="121.0" text="Update Profile" />
+            <Button fx:id="update1" layoutX="64.0" layoutY="82.0" mnemonicParsing="false" onAction="#AuditTrail" prefHeight="37.0" prefWidth="121.0" text="AuditTrail" />
             </children></AnchorPane>
     </children>
 </AnchorPane>

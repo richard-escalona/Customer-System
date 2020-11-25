@@ -59,7 +59,7 @@ public class SessionGateway {
         response = httpclient.execute(loginRequest);
 
         // a special response for invalid credentials
-        if (response.getStatusLine().getStatusCode() == 401) {
+        if (response.getStatusLine().getStatusCode() == 404) {
             logger.error("401 status code returned: " + response.getStatusLine());
             httpclient.close();
         }

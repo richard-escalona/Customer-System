@@ -4,10 +4,7 @@ import Controllers.ViewSwitcher;
 import backend.model.*;
 //import backend.model.loginModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +91,7 @@ public class PersonGatewayDB {
             rows= st.executeQuery();
             rows.first();
 
-            loginModel credentials = new loginModel(rows.getString("user_name"), rows.getString("password"));
+            loginModel credentials = new loginModel(rows.getInt("id"), rows.getString("user_name"), rows.getString("password"));
 
             return credentials;
 
@@ -115,10 +112,7 @@ public class PersonGatewayDB {
     public void insertToken(String token) throws PersonException {
         PreparedStatement st = null;
         ResultSet newKeys = null;
-
         toke = token;
-
-
         try {
             st = connection.prepareStatement("insert into session (token) values (?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
@@ -136,6 +130,38 @@ public class PersonGatewayDB {
                     newKeys.close();
                 }
                 if(st != null)
+                    st.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    public List<Audit> fetchAudit(int userId) {
+        PreparedStatement st = null;
+        ResultSet rows = null;
+        try {
+            st = connection.prepareStatement("select * from audit_trail where person_id = ?",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            st.setInt(1, userId);
+            rows = st.executeQuery();
+            rows.first();
+            List<Audit> output = new ArrayList<>();
+
+            output.add(new Audit(rows.getInt("id"), rows.getString("change_msg"), rows.getInt("changed_by"), rows.getInt("person_id"), rows.getTimestamp("when_occurred")));
+
+            while(rows.next()){
+                output.add(new Audit(rows.getInt("id"), rows.getString("change_msg"), rows.getInt("changed_by"), rows.getInt("person_id"), rows.getTimestamp("when_occurred")));
+            }
+            return output;
+        } catch (SQLException e1) {
+            //e1.printStackTrace();
+            throw new PersonException(e1);
+        } finally {
+            try {
+                if (rows != null)
+                    rows.close();
+                if (st != null)
                     st.close();
             } catch (SQLException e2) {
                 e2.printStackTrace();
@@ -177,12 +203,13 @@ public class PersonGatewayDB {
     }
 
     // crud functions
-    public int insertPerson(Person person) throws PersonException {
+    public int insertPerson(Person person, int UserID) throws PersonException {
         // use connection to insert a person in the db
         PreparedStatement st = null;
         ResultSet newKeys = null;
         int newId = 0;
         try {
+            connection.setAutoCommit(false);
             st = connection.prepareStatement("insert into people (id, first_name, last_name, age, birth_date) values (?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
 
@@ -199,6 +226,17 @@ public class PersonGatewayDB {
             // System.out.println("new person id is " + );
             newId = newKeys.getInt(1);
 
+           st = connection.prepareStatement("insert into audit_trail (id, change_msg, changed_by, person_id, when_occurred) values (? , ? , ? , ?, ?)");
+
+           st.setInt(1,0);
+           st.setString(2,"added");
+           st.setInt(3,UserID);
+           st.setInt(4, newId);
+           st.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+            st.executeUpdate();
+            connection.commit();
+
+
         } catch (SQLException e1) {
             e1.printStackTrace();
             throw new PersonException(e1);
@@ -209,6 +247,8 @@ public class PersonGatewayDB {
                 }
                 if(st != null)
                     st.close();
+                if(connection != null)
+                    connection.setAutoCommit(true);
             } catch (SQLException e2) {
                 e2.printStackTrace();
             }
@@ -238,21 +278,36 @@ public class PersonGatewayDB {
             }
         }
     }
-    public void updatePerson(Person person) throws PersonException {
+    public void updatePerson(Person person,String message, int UserID) throws PersonException {
         if(person.getId() == Person.NEW_PERSON)
             throw new PersonException("A new person must be inserted first.");
         System.out.println("backend debug pgate update meth" + person.getId());
         PreparedStatement st = null;
         try {
+            connection.setAutoCommit(false);
             st = connection.prepareStatement("update people set first_name = ?, last_name = ?, age = ?, birth_date = ? where id = ?",
                     PreparedStatement.RETURN_GENERATED_KEYS);
 
             st.setString(1, person.getFirst_name());
-            st.setString(2,person.getLast_name());
+            st.setString(2, person.getLast_name());
             st.setInt(3, person.getAge());
             st.setDate(4,java.sql.Date.valueOf(person.getBirth_date()));
             st.setInt(5,person.getId());
             st.executeUpdate();
+
+            st = connection.prepareStatement("insert into audit_trail (id, change_msg, changed_by, person_id, when_occurred) values (? , ? , ? , ?, ?)");
+
+            st.setInt(1,0);
+
+
+
+            st.setString(2,message);
+
+            st.setInt(3,UserID);
+            st.setInt(4, person.getId());
+            st.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+            st.executeUpdate();
+            connection.commit();
 
         } catch (SQLException e1) {
             e1.printStackTrace();
@@ -261,6 +316,8 @@ public class PersonGatewayDB {
             try {
                 if(st != null)
                     st.close();
+                if(connection != null)
+                    connection.setAutoCommit(true);
             } catch (SQLException e2) {
                 e2.printStackTrace();
             }

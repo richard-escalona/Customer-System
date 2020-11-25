@@ -1,5 +1,5 @@
 package Controllers;
-
+import backend.model.Person;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -52,15 +52,12 @@ public class UpdateProfile implements Initializable {
         datePicker.setValue(LocalDate.of(2016, 7, 8));
 
         //create person
-        Person person = new Person(firstName.getText(),lastName.getText(),Integer.parseInt(id.getText()), AGE,dob);
+        Person person = new Person(Integer.parseInt(id.getText()),firstName.getText(),lastName.getText(), AGE,dob);
 
         if(!validId || !validName || !validLastName || !validAge || dob.isAfter(LocalDate.now()))
             AlertBox.display("Title of window", "Invalid input entered");
         else {
-            //check to see if we have to update or add person (depends on id #)
-            person.save();
-
-            ListViewController.UpdatePerson(firstname,  lastname,  idNum,  ageNum,  dob, oldId);
+            ListViewController.UpdatePerson(person);
             logger.info("UPDATING <" + firstname +" "+  lastname + idNum+ ">");
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }

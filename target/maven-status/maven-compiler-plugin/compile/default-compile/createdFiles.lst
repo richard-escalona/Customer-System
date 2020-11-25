@@ -19,6 +19,5 @@ backend\services\PersonController.class
 Controllers\ViewSwitcher.class
 Controllers\Person.class
 Controllers\ViewSwitcher$1.class
-backend\model\Global.class
 backend\Database\PersonGatewayDB.class
 Controllers\PersonExceptions.class

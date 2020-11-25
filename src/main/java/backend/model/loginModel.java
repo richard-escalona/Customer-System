@@ -1,13 +1,23 @@
 package backend.model;
 
 public class loginModel {
+    int id;
     String user_name;
     String password;
 
-    public loginModel(String user_name, String password){
 
+
+    public loginModel(int id, String user_name, String password){
+        this.id = id;
         this.user_name = user_name;
         this.password = password;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUser_name() {

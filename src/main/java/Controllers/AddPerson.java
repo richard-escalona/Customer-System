@@ -1,5 +1,6 @@
 package Controllers;
 
+import backend.model.Person;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -52,7 +53,9 @@ public class AddPerson implements Initializable {
         iD = Person.NEW_PERSON;
         Period period = Period.between(dob, LocalDate.now());
         AGE = period.getYears();
-        Person person = new Person( FirstName,LastName,iD, AGE, dob);
+        System.out.println("_____________________> MY AGEEEEEEE       " + AGE );
+
+        Person person = new Person( iD,FirstName,LastName, AGE, dob);
 
         ViewSwitcher.globalAction = event;
 
@@ -63,17 +66,14 @@ public class AddPerson implements Initializable {
         validLastName = isValid(lastName.getText(), 3);
         validAge = isValid(age.getText(), 0);
 
-        System.out.println("inside the add person class ----->");
         if( !validName || !validLastName || dob.isAfter(LocalDate.now()) ) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Invalid input (check first name, last name, and DOB).\n Please try again.");
             alert.showAndWait();
         }
         else {
-            //check to see if we have to update or add person (depends on id #)
-            person.save();
-            System.out.println("this is the person ----> add " + firstname + lastname + idNum + ageNum + dob);
-            ListViewController.setAddition(firstname, lastname, idNum, ageNum, dob);
+
+            ListViewController.setAddition(person);
             logger.info("CREATING <" + firstname +" "+  lastname + idNum + ">");
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
         }

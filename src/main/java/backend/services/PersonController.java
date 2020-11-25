@@ -4,6 +4,7 @@ import Controllers.ViewSwitcher;
 import backend.Database.DBConnect;
 import backend.Database.PersonException;
 import backend.Database.PersonGatewayDB;
+import backend.model.Audit;
 import backend.model.Person;
 import backend.model.loginModel;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,8 @@ public class PersonController {
     private static final Logger logger = LogManager.getLogger();
     private Connection connection;
     private String token;
+    private int userID;
+    public int getUserID(){return userID;}
     public String sessionToken(){ return token; }
 
     // create a connection on startup
@@ -40,8 +43,6 @@ public class PersonController {
         } catch (SQLException | IOException e) {
             logger.error("*** " + e);
 
-            // TODO: find a better way to force shutdown on connect failure
-            // System.exit(0);
         }
     }
     // close a connection on shutdown
@@ -65,6 +66,7 @@ public class PersonController {
         }
         try{
             loginModel credentialDB = new PersonGatewayDB(connection).fetchUser(login.getUser_name());
+            userID = credentialDB.getId();
 
             ValidateCredential validcred = new ValidateCredential();
             if(!validcred.ValidateCredential(login,credentialDB)){
@@ -105,6 +107,24 @@ public class PersonController {
         }
     }
 
+    @GetMapping("/people/{personid}/audittrail")
+    public Object fetchTrail(@RequestHeader Map<String, String> headers,
+                              @PathVariable("personid") int personID) {
+        if (!authorize(headers)) {
+            return new ResponseEntity<String>("", HttpStatus.valueOf(401));
+        }
+        // create the gateway and fetch the person
+        try {
+            List<Audit> trail = new PersonGatewayDB(connection).fetchAudit(personID);
+            JSONArray array = new JSONArray(trail);
+            return new ResponseEntity<String>(array.toString(), HttpStatus.valueOf(200));
+
+        } catch (PersonException e) {
+            ResponseEntity<String> response = new ResponseEntity<String>("person " + personID + " not found", HttpStatus.valueOf(404));
+            return response;
+        }
+    }
+
     @GetMapping("/people")
     public Object fetchPeople(@RequestHeader Map<String, String> headers) {
         if (!authorize(headers)) {
@@ -116,7 +136,6 @@ public class PersonController {
 
             JSONArray array = new JSONArray(people);
 
-            System.out.println("ARRRRRRRRRRRRRRR" + array);
             return new ResponseEntity<String>(array.toString(), HttpStatus.valueOf(200));
 
         } catch (PersonException e) {
@@ -129,7 +148,6 @@ public class PersonController {
         if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
-
         try {
             Person person = new PersonGatewayDB(connection).fetchPerson(personID);
             new PersonGatewayDB(connection).deletePerson(person);
@@ -171,7 +189,7 @@ public class PersonController {
                 return new ResponseEntity<String>(err.toString(), HttpStatus.valueOf(400));
             }
 
-            int id_returned  = new PersonGatewayDB(connection).insertPerson(person);
+            int id_returned  = new PersonGatewayDB(connection).insertPerson(person,getUserID());
             person.setId(id_returned);
 
             return new ResponseEntity<String>("", HttpStatus.valueOf(200));
@@ -180,13 +198,30 @@ public class PersonController {
     public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,
                                                @PathVariable("personid") int personID, @RequestBody Person personUpdate){
 
-        System.out.println("in personController ___--------------??>>>>>>>>>>>>>>>> ");
-        System.out.println("this is the person update " + personUpdate);
+        StringBuilder message = new StringBuilder();
+          int count = 0;
+
         if (!authorize(headers)) {
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
         }
         try {
             Person person = new PersonGatewayDB(connection).fetchPerson(personID);
+
+            // this is to add the message to audit trail
+            if(!person.getFirst_name().equals(personUpdate.getFirst_name()) ){
+                count ++;
+                message.append("first name changed from " + person.getFirst_name() + " to " + personUpdate.getFirst_name() + " ");
+            }
+            if(!person.getLast_name().equals(personUpdate.getLast_name())){
+                if (count != 0){ message.append(", ");}
+                message.append("last name changed from " + person.getLast_name() + " to " + personUpdate.getLast_name() + " ");
+            }
+            if(person.getAge() != personUpdate.getAge()){
+                if (count != 0){ message.append(", ");}
+                message.append("age changed from " + person.getAge() + " to " + personUpdate.getAge());
+            }
+
+            //update
             if(!(personUpdate.getFirst_name() == null)){
                 person.setFirst_name(personUpdate.getFirst_name());
             }
@@ -228,7 +263,7 @@ public class PersonController {
             }
             System.out.println(person.toString());
             PersonGatewayDB gateway = new PersonGatewayDB(connection) ;
-            gateway.updatePerson(person);
+            gateway.updatePerson(person,message.toString(),userID);
             return new ResponseEntity<String>("", HttpStatus.valueOf(200));
         } catch (PersonException e){
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));

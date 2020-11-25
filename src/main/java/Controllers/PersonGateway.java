@@ -1,4 +1,5 @@
 package Controllers;
+import backend.model.Audit;
 import backend.model.Person;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -46,6 +48,25 @@ public class PersonGateway {
             throw new PersonExceptions(e);
         }
         return people;
+    }
+
+    public ArrayList<Audit> fetchTrails() {
+        ArrayList<Audit> trails = new ArrayList<>();
+
+        try {
+            HttpGet request = new HttpGet(wsURL);
+            // specify Authorization header
+            request.setHeader("Authorization", sessionId);
+            String response = waitForResponseAsString(request);
+            System.out.println( response);
+            for(Object obj : new JSONArray(response)) {
+                JSONObject jsonObject = (JSONObject) obj;
+                trails.add(new Audit(jsonObject.getInt("id"), jsonObject.getString("change_msg"), jsonObject.getInt("changed_by"),jsonObject.getInt("person_id"), Timestamp.valueOf(jsonObject.getString("when_occurred"))));
+            }
+        } catch (Exception e) {
+            throw new PersonExceptions(e);
+        }
+        return trails;
     }
 
     /*************************************Update******************************************************************************
@@ -121,6 +142,7 @@ public class PersonGateway {
         System.out.println("this is the getter test: " + person.getFirst_name());
         requestJson.put("first_name", person.getFirst_name());
         requestJson.put("last_name", person.getLast_name());
+        requestJson.put("age", person.getAge());
         requestJson.put("birth_date", person.getBirth_date());
         String updateString = requestJson.toString();
         HttpPost httpPost = new HttpPost(wsURL);

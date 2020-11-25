@@ -32,8 +32,6 @@ public class ListViewController implements Initializable {
     public ListView<Person> listview;
     public ObservableList<Person> person=
             FXCollections.observableArrayList(people);
-//                    new Person("Richard", "Escalona", 420666, 22, LocalDate.of(1997,9,23)),
-//                    new Person("Chris", "Urista", 420666, 28,  LocalDate.of(1997,9,23)));
     public static int selectedIndex=-1;
 
     @Override
@@ -44,13 +42,9 @@ public class ListViewController implements Initializable {
     /**
      * Adds a new person
      **/
-    public static void setAddition( String firstName, String lastName, int id, int age, LocalDate Dob) throws IOException {
-      //  person.add(new Person(firstName, lastName, id, age, Dob));
-
-        ViewSwitcher.getInstance().addPerson(new Person(id, firstName, lastName, age, Dob));
-
-
-
+    public static void setAddition( Person person) throws IOException {
+        PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
+        pg.insertPerson(person);
     }
 
     /**
@@ -70,16 +64,15 @@ public class ListViewController implements Initializable {
     /**
      * Adds a new person to the list viewe
      **/
+
     @FXML
     public void Add(ActionEvent event) throws IOException {
         ViewSwitcher.globalAction = event;
         ViewSwitcher.getInstance().switchView(ViewType.addPerson);
-
     }
 
     @FXML
     void AuditTrail(ActionEvent event) throws IOException {
-        System.out.println("hello world");
         ViewSwitcher.globalAction = event;
         ViewSwitcher.getInstance().switchView(ViewType.auditTrail);
     }
@@ -95,12 +88,9 @@ public class ListViewController implements Initializable {
             {
                 if(person.getId() == personId)
                 {
-
                     System.out.println(person + "before change");
                     person.setFirst_name(person.getFirst_name());
                     System.out.println(person + "After change");
-
-
                 }
             }
             ViewSwitcher.globalAction = event;
@@ -111,13 +101,9 @@ public class ListViewController implements Initializable {
         }
     }
 
-    public static void UpdatePerson( String firstName, String lastName, int id, int age, LocalDate Dob, int oldId) throws IOException {
-        //  person.add(new Person(firstName, lastName, id, age, Dob));
-        ViewSwitcher.getInstance().updatePerson(new Person(id, firstName, lastName, age, Dob), oldId);
-
-
-
-
+    public static void UpdatePerson( Person person) throws IOException {
+        PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
+        pg.Update(person, person.getId());
     }
 
     /**
@@ -142,14 +128,9 @@ public class ListViewController implements Initializable {
                    ViewSwitcher.getInstance().deletePerson(person);
                }
            }
-
-
-
-
-
+           person.remove(selectedIndex);
+           listview.refresh();
            logger.info("DELETING <" + fName + " " + lName + ">");
-
-           //pg.deletePerson(person.get(selectedIndex));
        }
        catch (Exception e)
        {

@@ -1,5 +1,9 @@
 package Controllers;
 
+import backend.model.Audit;
+import backend.model.Person;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class auditTrailController implements Initializable {
@@ -18,7 +23,7 @@ public class auditTrailController implements Initializable {
     private AnchorPane mainPane;
 
     @FXML
-    private ListView<?> listview;
+    private ListView<Audit> listview;
     @FXML
     private TextField personId;
 
@@ -35,8 +40,11 @@ public class auditTrailController implements Initializable {
         }
         else {
             int id = Integer.parseInt(stringId);
-            System.out.println("this is the id that was entered: " + stringId);
+            PersonGateway pg = new PersonGateway("http://localhost:8080/people/" + id + "/audittrail",ViewSwitcher.getInstance().getSessionid());
 
+            List<Audit> trails = pg.fetchTrails();
+            ObservableList<Audit> trail = FXCollections.observableArrayList(trails);
+            listview.setItems(trail);
         }
     }
 
