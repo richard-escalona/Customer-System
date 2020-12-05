@@ -10,6 +10,7 @@ Controllers\UpdateProfile.class
 Controllers\auditTrailController.class
 backend\Database\DBConnect.class
 backend\Database\PersonException.class
+backend\model\Audit.class
 backend\model\SessionToken.class
 Controllers\App.class
 Controllers\SessionGateway.class

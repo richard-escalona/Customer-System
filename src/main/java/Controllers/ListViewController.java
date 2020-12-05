@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +17,11 @@ import backend.model.Person;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ListViewController implements Initializable {
 
@@ -25,6 +29,8 @@ public class ListViewController implements Initializable {
     private static final Logger logger = LogManager.getLogger(ListViewController.class);
     @FXML
     private Button update;
+    @FXML
+    private TextField newPID;
 
     public List<Person> people  = ViewSwitcher.getInstance().peopleFetch();
     //public List<Person> people = ViewSwitcher.getInstance().getPeople();
@@ -46,7 +52,25 @@ public class ListViewController implements Initializable {
         PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
         pg.insertPerson(person);
     }
+    @FXML
+    void newSearchList(ActionEvent event) {
+        String name = newPID.getText();
+        List<Person> filteredList = new ArrayList<>();
+        for(Person person : people )
+        {
+            Pattern pattern = Pattern.compile(    "^" + name , Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(person.getLast_name());
+            boolean matchFound = matcher.find();
 
+            if(matchFound){
+                filteredList.add(person);
+                ObservableList<Person> person1 = FXCollections.observableArrayList(filteredList);
+                listview.setItems(person1);
+            }
+
+        }
+
+    }
     /**
      * shows index of person/index you are ate
      **/
