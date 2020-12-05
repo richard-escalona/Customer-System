@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * still need to implement the dateofBirth but unsure what datatype to make int string?
  *
  * **/
-public class Person {
+public class modifiedPerson {
     public static final int NEW_PERSON = 0;
     String first_name;
     String last_name;
@@ -21,13 +21,13 @@ public class Person {
      * person constructor
      **/
 
-    public Person(int id, String first_name, String last_name, int age, LocalDate birth_date){
+    public modifiedPerson(int id, String first_name, String last_name, int age, LocalDate birth_date, LocalDateTime lastModified){
         this.first_name = first_name;
         this.last_name = last_name;
         this.id = id;
         this.age = age;
         this.birth_date = birth_date;
-        this.lastModified = LocalDateTime.now();
+        this.lastModified = lastModified;
     }
 
     /**
@@ -111,4 +111,3 @@ public class Person {
     }
 
 }
-

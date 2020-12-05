@@ -7,6 +7,7 @@ import backend.Database.PersonGatewayDB;
 import backend.model.Audit;
 import backend.model.Person;
 import backend.model.loginModel;
+import backend.model.modifiedPerson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -196,7 +198,7 @@ public class PersonController {
         }
     @PutMapping("/people/{personid}")
     public ResponseEntity<String> updatePerson(@RequestHeader Map<String, String> headers,
-                                               @PathVariable("personid") int personID, @RequestBody Person personUpdate){
+                                               @PathVariable("personid") int personID, @RequestBody modifiedPerson personUpdate){
 
         StringBuilder message = new StringBuilder();
           int count = 0;
@@ -206,6 +208,7 @@ public class PersonController {
         }
         try {
             Person person = new PersonGatewayDB(connection).fetchPerson(personID);
+            person.setLastModified(personUpdate.getLastModified());
 
             // this is to add the message to audit trail
             if(!person.getFirst_name().equals(personUpdate.getFirst_name()) ){
@@ -267,7 +270,9 @@ public class PersonController {
             return new ResponseEntity<String>("", HttpStatus.valueOf(200));
         } catch (PersonException e){
             return new ResponseEntity<String>("", HttpStatus.valueOf(401));
-
+        }
+        catch (OptimisticLockException e) {
+            return new ResponseEntity<String>("Please Update Again ", HttpStatus.valueOf(409));
         }
     }
 

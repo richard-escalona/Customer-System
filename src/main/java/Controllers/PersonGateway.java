@@ -1,6 +1,7 @@
 package Controllers;
 import backend.model.Audit;
 import backend.model.Person;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -12,10 +13,12 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 
@@ -42,12 +45,35 @@ public class PersonGateway {
             System.out.println( response);
             for(Object obj : new JSONArray(response)) {
                 JSONObject jsonObject = (JSONObject) obj;
-                people.add(new Person(jsonObject.getInt("id"), jsonObject.getString("first_name"), jsonObject.getString("last_name"),jsonObject.getInt("age"), LocalDate.parse((CharSequence) jsonObject.get("birth_date"))));
+                Person person = new Person(jsonObject.getInt("id"), jsonObject.getString("first_name"), jsonObject.getString("last_name"),jsonObject.getInt("age"), LocalDate.parse((CharSequence) jsonObject.get("birth_date")));
+                person.setLastModified(LocalDateTime.parse((CharSequence)jsonObject.get("lastModified")));
+                people.add(person);
             }
         } catch (Exception e) {
             throw new PersonExceptions(e);
         }
         return people;
+    }
+
+    public Person fetchPerson(int ID) {
+
+        ArrayList<Person> people = new ArrayList<Person>();
+        try{
+            HttpGet request = new HttpGet(wsURL + "/" + ID);
+            // specify Authorization header
+            request.setHeader("Authorization", sessionId);
+            String response = waitForResponseAsString(request);
+            System.out.println( response);
+            for(Object obj : new JSONArray(response)) {
+                JSONObject jsonObject = (JSONObject) obj;
+                Person person = new Person(jsonObject.getInt("id"), jsonObject.getString("first_name"), jsonObject.getString("last_name"),jsonObject.getInt("age"), LocalDate.parse((CharSequence) jsonObject.get("birth_date")));
+                person.setLastModified(LocalDateTime.parse((CharSequence)jsonObject.get("lastModified")));
+                people.add(person);
+            }
+        } catch (Exception e) {
+            throw new PersonExceptions(e);
+        }
+        return people.get(1);
     }
 
     public ArrayList<Audit> fetchTrails() {
@@ -69,12 +95,6 @@ public class PersonGateway {
         return trails;
     }
 
-    /*************************************Update******************************************************************************
-     For Grading purposes / future reference
-     *  Valid case: Person with id 1 has a first name change to “Bobby”) will recieve a 200 response
-     *  Invalid case: TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1. Can add to ' + "/" + 1111 ' to wsURL.
-     *  Invalid case:  changing the session id to the variable seshtoken will result in a 401 not found response.
-     *************************************************************************************************************************/
     public void Update(Person person, int OldId) throws IOException {
         // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
         System.out.println("INSIDE UPDATE PERSON PGATEWAYYY " + person);
@@ -82,25 +102,23 @@ public class PersonGateway {
         CloseableHttpClient httpclient = null;
 
         httpclient = HttpClients.createDefault();
-        // assemble credentials into a JSON encoded string
         JSONObject requestJson = new JSONObject();
         HttpPut httpPut = new HttpPut(wsURL + "/" + OldId);
+
         //--------------------------------------------------------------------------------
-        // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
+
         System.out.println(person.getId());
         requestJson.put("id", person.getId());
         requestJson.put("first_name", person.getFirst_name());
         requestJson.put("last_name", person.getLast_name());
         requestJson.put("age", person.getAge());
         requestJson.put("birth_date", person.getBirth_date());
+        requestJson.put("lastModified", person.getLastModified());
+        System.out.println("-------------------------------------------------->  " + person.getLastModified());
 
 
         String updateString = requestJson.toString();
-        // TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1. Can add to ' + "/" + 1111 ' to wsURL.
-       // HttpPut httpPut = new HttpPut(wsURL);
 
-        //--------------------------------------------------------------------------------
-        // TO TEST FOR 401 ERROR  --> change sessionID to the var seshtoken
 
         httpPut.setHeader("Authorization", sessionId);
         StringEntity stringEntity = new StringEntity(updateString);
@@ -113,19 +131,13 @@ public class PersonGateway {
         System.out.println("Executing request " + response.getStatusLine());
 
         //For testing
-        if (response.getStatusLine().getStatusCode() != 200) {
-            //System.out.println("Response Code: " + response.getStatusLine());
-            logger.info("USER NOT FOUND");
-            //  logger.info("Please enter in the username field 'Bobby' to recieve a 200 response.");
+        if (response.getStatusLine().getStatusCode() == 409) {
+            System.out.println("OPTIMISTIC LOCK!!!!!!!!!!!!!");
+            throw new OptimisticLockException();
         }
 
     }
-    /***********************************************insertPerson**************************************************************************************
-     For Grading purposes / future reference
-     * IMPORTANT: Valid case: please enter 01/01/1990 in the dateofBirthfield, then press enter and you should recieve a 200 response.
-     * Also, Make sure to enter data into the DOB field!!
-     * Invalid case: change line 113: to fstName to recieve a 400 response
-     **************************************************************************************************************************************************/
+
     public int insertPerson(Person person) throws IOException {
         int respondID = 0;
         System.out.println("inside person gatway, person : " + person);
@@ -172,12 +184,6 @@ public class PersonGateway {
         return  respondID;
     }
 
-    /****************************************deletePerson********************************************************************
-     For Grading purposes / future reference
-     * Valid case: correct sessionid and deleting the record with id 1 will result with a 200 respnse.
-     * Invalid case: if authorization header is incorrect changing line 163 to seshtoken will trigger a 401 response code.
-     * Invalid case2: if any other record besides one is deleted will trigger/respond with a 404 not found response code.
-     ************************************************************************************************************************/
 
     public void deletePerson(Person person) throws IOException {
         // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html

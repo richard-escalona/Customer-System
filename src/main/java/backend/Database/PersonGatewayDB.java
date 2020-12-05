@@ -4,6 +4,7 @@ import Controllers.ViewSwitcher;
 import backend.model.*;
 //import backend.model.loginModel;
 
+import javax.persistence.OptimisticLockException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public class PersonGatewayDB {
             rows.first();
 
             Person person = new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate());
+            person.setLastModified(rows.getTimestamp("last_modified").toLocalDateTime());
+            System.out.println("LAST MODIFIED ON:" + person.getLastModified());
             return person;
         } catch (SQLException e1) {
             //e1.printStackTrace();
@@ -46,37 +49,6 @@ public class PersonGatewayDB {
             }
         }
     }
-
-
-    public String getKey(){
-        PreparedStatement st = null;
-        ResultSet rows = null;
-        try{
-            st = connection.prepareStatement("SELECT * FROM `session` ORDER BY `id` DESC LIMIT 1",
-                    PreparedStatement.RETURN_GENERATED_KEYS);
-
-
-            rows= st.executeQuery();
-            rows.first();
-
-            String credentials = rows.getString("token");
-
-            return credentials;
-
-        }catch (SQLException e1){
-            throw  new PersonException(e1);
-        }finally {
-            try {
-                if (rows != null)
-                    rows.close();
-                if (st != null)
-                    st.close();
-            } catch (SQLException e2) {
-                e2.printStackTrace();
-            }
-        }
-    }
-
 
 
     //This method is to get a user for log in
@@ -181,10 +153,15 @@ public class PersonGatewayDB {
             rows = st.executeQuery();
             rows.first();
             List<Person> output = new ArrayList<>();
-            output.add(new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate()));
+            Person person= new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate());
+            person.setLastModified(rows.getTimestamp("last_modified").toLocalDateTime());
+            output.add(person);
+
 
             while(rows.next()){
-                output.add(new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate()));
+              Person person1 = new Person(rows.getInt("id"), rows.getString("first_name"), rows.getString("last_name"), rows.getInt("age"), rows.getDate("birth_date").toLocalDate());
+                person1.setLastModified(rows.getTimestamp("last_modified").toLocalDateTime());
+              output.add(person1);
             }
             return output;
         } catch (SQLException e1) {
@@ -281,7 +258,13 @@ public class PersonGatewayDB {
     public void updatePerson(Person person,String message, int UserID) throws PersonException {
         if(person.getId() == Person.NEW_PERSON)
             throw new PersonException("A new person must be inserted first.");
-        System.out.println("backend debug pgate update meth" + person.getId());
+        //if the record in the database has a more recent time than the optimistic exception
+        Person checkPerson  = fetchPerson(person.getId());
+        if(checkPerson.getLastModified().isAfter(person.getLastModified())) {
+            System.out.println("S########################################## INSIDE EXCEPTION");
+            throw new OptimisticLockException(checkPerson.getLastModified().toString());
+        }
+        System.out.println("S########################################## Made it safe"+" check:" + checkPerson.getLastModified() + "  Person:" + person.getLastModified());
         PreparedStatement st = null;
         try {
             connection.setAutoCommit(false);

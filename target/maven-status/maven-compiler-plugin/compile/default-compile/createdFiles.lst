@@ -14,6 +14,7 @@ backend\model\SessionToken.class
 Controllers\App.class
 Controllers\SessionGateway.class
 backend\model\loginModel.class
+backend\model\modifiedPerson.class
 backend\services\ValidateCredential.class
 backend\services\PersonController.class
 Controllers\ViewSwitcher.class

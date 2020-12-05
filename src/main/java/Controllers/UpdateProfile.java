@@ -1,14 +1,17 @@
 package Controllers;
+import backend.Database.PersonException;
 import backend.model.Person;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -21,7 +24,7 @@ public class UpdateProfile implements Initializable {
     String Age, ID, lastname, firstname, dateofBirth;
     int idNum, ageNum, AGE, oldId;
     boolean validAge, validName, validLastName, validId;
-    ListViewController person = new ListViewController();
+    ListViewController listPerson = new ListViewController();
     @FXML
     public Button closeButton;
     @FXML
@@ -53,13 +56,25 @@ public class UpdateProfile implements Initializable {
 
         //create person
         Person person = new Person(Integer.parseInt(id.getText()),firstName.getText(),lastName.getText(), AGE,dob);
+        person.setLastModified(listPerson.people.get(ListViewController.selectedIndex).getLastModified());
+
 
         if(!validId || !validName || !validLastName || !validAge || dob.isAfter(LocalDate.now()))
             AlertBox.display("Title of window", "Invalid input entered");
         else {
-            ListViewController.UpdatePerson(person);
+            try{
+                PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
+                pg.Update(person, person.getId());
             logger.info("UPDATING <" + firstname +" "+  lastname + idNum+ ">");
             ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
+            } catch (OptimisticLockException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Please redo your changes and try to save again.");
+                alert.showAndWait();
+            }catch ( PersonException e){
+                System.out.println("NOO");
+            }
+
         }
     }
 
@@ -145,12 +160,13 @@ public class UpdateProfile implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        firstName.setText(person.people.get(ListViewController.selectedIndex).getFirst_name());
-        lastName.setText(person.people.get(ListViewController.selectedIndex).getLast_name());
-        age.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).getAge()));
-        id.setText(Integer.toString(person.people.get(ListViewController.selectedIndex).getId()));
-        oldId = person.people.get(ListViewController.selectedIndex).getId();
-        DOB.setValue(person.people.get(ListViewController.selectedIndex).getBirth_date());
+        firstName.setText(listPerson.people.get(ListViewController.selectedIndex).getFirst_name());
+        lastName.setText(listPerson.people.get(ListViewController.selectedIndex).getLast_name());
+        age.setText(Integer.toString(listPerson.people.get(ListViewController.selectedIndex).getAge()));
+        id.setText(Integer.toString(listPerson.people.get(ListViewController.selectedIndex).getId()));
+        oldId = listPerson.people.get(ListViewController.selectedIndex).getId();
+        DOB.setValue(listPerson.people.get(ListViewController.selectedIndex).getBirth_date());
+
 
     }
 }
