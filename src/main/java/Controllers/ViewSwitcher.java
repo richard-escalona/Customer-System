@@ -103,11 +103,11 @@ public static ActionEvent globalAction;
     public void setPerson(List<Person> new_person){this.people = new_person;}
     public List<Person> getPeople(){return this.people;}
 
-    public List<Person> peopleFetch(){
-
-        PersonGateway pg = new PersonGateway("http://localhost:8080/people",this.getSessionid());
+    public List<Person> peopleFetch(int pageNumber, String lastname){
+        System.out.println("CALLED FETCH");
+        PersonGateway pg = new PersonGateway("http://localhost:8080/people?pageNum=" + pageNumber +"&lastName="+lastname ,this.getSessionid());
         List<Person> people = pg.fetchPeople();
-        //  System.out.println("The people are: " + people.toString());
+         System.out.println("The people are: " + people.toString());
         return people;
 
     }

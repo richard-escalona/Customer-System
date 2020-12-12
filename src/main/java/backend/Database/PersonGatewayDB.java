@@ -13,6 +13,7 @@ public class PersonGatewayDB {
     private Connection connection;
     public String toke;
     public PersonGatewayDB(){}
+    private final int pageSize = 10;
 
     public PersonGatewayDB(Connection connection) {
         this.connection = connection;
@@ -144,12 +145,21 @@ public class PersonGatewayDB {
 
 
 
-    public List<Person> fetchPeople() {
+    public List<Person> fetchPeople(int pageNum, String searchText) {
         PreparedStatement st = null;
         ResultSet rows = null;
         try {
-            st = connection.prepareStatement("select * from people",
+            if(searchText == null)
+                System.out.println(" IN FETCH PEOPLE TXT IS NULLWS");
+            else
+                System.out.println(" NOT NULL IN FETCH");
+            String whereClause = " ";
+            if(searchText != null && searchText.length() > 0)
+                whereClause = " where last_name like ? ";
+            st = connection.prepareStatement("select * from people " + whereClause + " ORDER BY id LIMIT " + pageNum + ", " +pageSize,
                     PreparedStatement.RETURN_GENERATED_KEYS);
+            if(searchText != null && searchText.length() > 0)
+                st.setString(1,searchText + "%");
             rows = st.executeQuery();
             rows.first();
             List<Person> output = new ArrayList<>();
@@ -261,10 +271,9 @@ public class PersonGatewayDB {
         //if the record in the database has a more recent time than the optimistic exception
         Person checkPerson  = fetchPerson(person.getId());
         if(checkPerson.getLastModified().isAfter(person.getLastModified())) {
-            System.out.println("S########################################## INSIDE EXCEPTION");
+
             throw new OptimisticLockException(checkPerson.getLastModified().toString());
         }
-        System.out.println("S########################################## Made it safe"+" check:" + checkPerson.getLastModified() + "  Person:" + person.getLastModified());
         PreparedStatement st = null;
         try {
             connection.setAutoCommit(false);

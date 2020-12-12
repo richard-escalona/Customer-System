@@ -24,15 +24,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ListViewController implements Initializable {
-
+    private int currPageNumber = 1;
     //public static String token;
     private static final Logger logger = LogManager.getLogger(ListViewController.class);
     @FXML
     private Button update;
     @FXML
+    private Button previous;
+    @FXML
     private TextField newPID;
 
-    public List<Person> people  = ViewSwitcher.getInstance().peopleFetch();
+    public List<Person> people  = ViewSwitcher.getInstance().peopleFetch(1,"");
     //public List<Person> people = ViewSwitcher.getInstance().getPeople();
     @FXML
     public ListView<Person> listview;
@@ -43,6 +45,8 @@ public class ListViewController implements Initializable {
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         listview.setItems(person);
+
+
     }
 
     /**
@@ -52,8 +56,51 @@ public class ListViewController implements Initializable {
         PersonGateway pg = new PersonGateway("http://localhost:8080/people",ViewSwitcher.getInstance().getSessionid());
         pg.insertPerson(person);
     }
+
     @FXML
-    void newSearchList(ActionEvent event) {
+    public void First(ActionEvent event){
+        String searchText = newPID.getText();
+        currPageNumber = 1;
+        List<Person> people  = ViewSwitcher.getInstance().peopleFetch(currPageNumber,searchText);
+        person.clear();
+        person.setAll(people);
+        listview.refresh();
+    }
+
+    @FXML
+    public void Next(ActionEvent event){
+        String searchText = newPID.getText();
+        currPageNumber += 10;
+        if(currPageNumber > 0)
+            previous.setDisable(false);
+        List<Person> newPeople  = ViewSwitcher.getInstance().peopleFetch(currPageNumber,searchText);
+        person.clear();
+        person= FXCollections.observableArrayList(newPeople);
+        listview.refresh();
+        listview.setItems(person);
+   }
+    @FXML
+    public void Prev(ActionEvent event) {
+        String searchText = newPID.getText();
+        currPageNumber -= 10;
+        if(currPageNumber < 0)
+            previous.setDisable(true);
+        else {
+            List<Person> newPeople = ViewSwitcher.getInstance().peopleFetch(currPageNumber, searchText);
+            person.clear();
+            person = FXCollections.observableArrayList(newPeople);
+            listview.refresh();
+            listview.setItems(person);
+        }
+    }
+
+    @FXML
+    public void Last(ActionEvent event) {
+    }
+
+
+    @FXML
+     public void newSearchList(ActionEvent event) {
         String name = newPID.getText();
         List<Person> filteredList = new ArrayList<>();
         for(Person person : people )

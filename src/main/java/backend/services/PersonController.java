@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -128,13 +129,22 @@ public class PersonController {
     }
 
     @GetMapping("/people")
-    public Object fetchPeople(@RequestHeader Map<String, String> headers) {
+    public Object fetchPeople(@RequestParam Map<String,String> param,  @RequestHeader Map<String, String> headers) {
         if (!authorize(headers)) {
             return new ResponseEntity<String>(" ", HttpStatus.valueOf(401));
         }
+
+
+
         // create the gateway and all people
         try {
-            List<Person> people = new PersonGatewayDB(connection).fetchPeople();
+            if(param.get("lastname") == null)
+                System.out.println("^^^^^^^^^^^^^^^^^^^NULLLL^^^^^^^^^^^^^^^^^");
+            int pageNum = Integer.parseInt(param.get("pageNum"));
+            String searchText = param.get("lastName");
+            System.out.println("------------------------------------>" +pageNum);
+            System.out.println("------------------------------------>" + searchText);
+            List<Person> people = new PersonGatewayDB(connection).fetchPeople(pageNum,searchText);
 
             JSONArray array = new JSONArray(people);
 

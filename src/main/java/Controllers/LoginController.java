@@ -59,19 +59,19 @@ public class LoginController implements Initializable {
         try{
             SessionGateway session = new SessionGateway();
             String tok = session.loginVerification(username,password);
-            if (tok.equals("bad")){
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setContentText("Not able to authenticate.\n Please try again.");
-                txt1.clear();
-                txt2.clear();
-                alert.showAndWait();
-            }else{
+
+//            if (tok.equals("bad")){
+//               throw new Exception();
+//            }else{
                 ViewSwitcher.getInstance().sessionID(tok);
                 logger.info("<{}>LOGGED IN", txt2.getText());
                 ViewSwitcher.globalAction = event;
+            System.out.println("--------->" + tok);
                 ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
-            }
+            System.out.println("WHHHHHHHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+            //}
         }catch (Exception e){
+
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Not able to authenticate.\n Please try again.");
             txt1.clear();
