@@ -35,7 +35,7 @@ public class ListViewController implements Initializable {
     private TextField newPID;
 
     public List<Person> people  = ViewSwitcher.getInstance().peopleFetch(1,"");
-    //public List<Person> people = ViewSwitcher.getInstance().getPeople();
+
     @FXML
     public ListView<Person> listview;
     public ObservableList<Person> person=

@@ -145,14 +145,10 @@ public class PersonGatewayDB {
 
 
 
-    public List<Person> fetchPeople(int pageNum, String searchText) {
+    public FetchResults fetchPeople(int pageNum, String searchText) {
         PreparedStatement st = null;
         ResultSet rows = null;
         try {
-            if(searchText == null)
-                System.out.println(" IN FETCH PEOPLE TXT IS NULLWS");
-            else
-                System.out.println(" NOT NULL IN FETCH");
             String whereClause = " ";
             if(searchText != null && searchText.length() > 0)
                 whereClause = " where last_name like ? ";
@@ -173,7 +169,15 @@ public class PersonGatewayDB {
                 person1.setLastModified(rows.getTimestamp("last_modified").toLocalDateTime());
               output.add(person1);
             }
-            return output;
+
+            st = connection.prepareStatement("select count(*) from people ",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = st.executeQuery();
+            resultSet.next();
+            int numRows = resultSet.getInt(1);
+             FetchResults results = new FetchResults(output,numRows);
+
+            return results;
         } catch (SQLException e1) {
             //e1.printStackTrace();
             throw new PersonException(e1);

@@ -4,10 +4,7 @@ import Controllers.ViewSwitcher;
 import backend.Database.DBConnect;
 import backend.Database.PersonException;
 import backend.Database.PersonGatewayDB;
-import backend.model.Audit;
-import backend.model.Person;
-import backend.model.loginModel;
-import backend.model.modifiedPerson;
+import backend.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -24,6 +21,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -138,15 +136,19 @@ public class PersonController {
 
         // create the gateway and all people
         try {
-            if(param.get("lastname") == null)
-                System.out.println("^^^^^^^^^^^^^^^^^^^NULLLL^^^^^^^^^^^^^^^^^");
+
             int pageNum = Integer.parseInt(param.get("pageNum"));
             String searchText = param.get("lastName");
-            System.out.println("------------------------------------>" +pageNum);
-            System.out.println("------------------------------------>" + searchText);
-            List<Person> people = new PersonGatewayDB(connection).fetchPeople(pageNum,searchText);
 
-            JSONArray array = new JSONArray(people);
+            FetchResults people = new PersonGatewayDB(connection).fetchPeople(pageNum,searchText);
+
+            Map<String, Integer> map = new HashMap<>();
+            map.put("numRows",people.getNumRows());
+            JSONArray array = new JSONArray(people.getPeople());
+         //   array.put(map);
+
+            System.out.println(" NUMBER OF RECORDS IN DB --------->" + map.get("numRows"));
+
 
             return new ResponseEntity<String>(array.toString(), HttpStatus.valueOf(200));
 

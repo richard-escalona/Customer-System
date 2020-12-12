@@ -60,16 +60,15 @@ public class LoginController implements Initializable {
             SessionGateway session = new SessionGateway();
             String tok = session.loginVerification(username,password);
 
-//            if (tok.equals("bad")){
-//               throw new Exception();
-//            }else{
+            if (tok.equals("bad")){
+               throw new Exception();
+            }else{
                 ViewSwitcher.getInstance().sessionID(tok);
                 logger.info("<{}>LOGGED IN", txt2.getText());
                 ViewSwitcher.globalAction = event;
-            System.out.println("--------->" + tok);
+
                 ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
-            System.out.println("WHHHHHHHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-            //}
+            }
         }catch (Exception e){
 
             Alert alert = new Alert(Alert.AlertType.WARNING);

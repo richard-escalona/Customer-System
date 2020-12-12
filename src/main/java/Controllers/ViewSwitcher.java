@@ -104,7 +104,6 @@ public static ActionEvent globalAction;
     public List<Person> getPeople(){return this.people;}
 
     public List<Person> peopleFetch(int pageNumber, String lastname){
-        System.out.println("CALLED FETCH");
         PersonGateway pg = new PersonGateway("http://localhost:8080/people?pageNum=" + pageNumber +"&lastName="+lastname ,this.getSessionid());
         List<Person> people = pg.fetchPeople();
          System.out.println("The people are: " + people.toString());
