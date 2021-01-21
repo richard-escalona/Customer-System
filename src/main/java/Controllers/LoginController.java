@@ -66,8 +66,10 @@ public class LoginController implements Initializable {
                 ViewSwitcher.getInstance().sessionID(tok);
                 logger.info("<{}>LOGGED IN", txt2.getText());
                 ViewSwitcher.globalAction = event;
-
+                System.out.println("BEFOREEEEEEEEEEEEEEEEEEEEEEEE");
                 ViewSwitcher.getInstance().switchView(ViewType.ListViewController);
+                System.out.println("AFTERRRRRRRRRRRRRRRRRRRRRRRRRR");
+
             }
         }catch (Exception e){
 
@@ -81,7 +83,5 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        txt2.setText("user");
-        txt1.setText("name");
     }
 }

@@ -1,35 +1,23 @@
 package Controllers;
 
 import backend.model.Person;
-import backend.model.loginModel;
-import backend.services.PersonController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.*;
+
+/**
+ * This is singleton class is used to centralize our navigation and globalize our session authentication key.
+ **/
 
 public class ViewSwitcher implements Initializable {
 
@@ -62,7 +50,7 @@ public static ActionEvent globalAction;
                 url = new File("src/main/resources/Add.fxml").toURI().toURL();
                 rootPane = FXMLLoader.load(url);
                 scene = new Scene(rootPane);// pane you are GOING TO show
-                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();// pane
+                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();
                 window.setScene(scene);
                 window.show();
                 break;
@@ -71,7 +59,7 @@ public static ActionEvent globalAction;
                  url = new File("src/main/resources/ListView.fxml").toURI().toURL();
                 rootPane = FXMLLoader.load(url);
                 scene = new Scene(rootPane);// pane you are GOING TO show
-                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();// pane
+                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();
                 window.setScene(scene);
                 window.show();
                 break;
@@ -79,7 +67,7 @@ public static ActionEvent globalAction;
                 url = new File("src/main/resources/UpdateProfile.fxml").toURI().toURL();
                 rootPane = FXMLLoader.load(url);
                 scene = new Scene(rootPane);// pane you are GOING TO show
-                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();// pane
+                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();
                 window.setScene(scene);
                 window.show();
                 break;
@@ -87,7 +75,7 @@ public static ActionEvent globalAction;
                 url = new File("src/main/resources/audittrail.fxml").toURI().toURL();
                 rootPane = FXMLLoader.load(url);
                 scene = new Scene(rootPane);// pane you are GOING TO show
-                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();// pane
+                window = (Stage) ((Node) ViewSwitcher.globalAction.getSource()).getScene().getWindow();
                 window.setScene(scene);
                 window.show();
                 break;
@@ -96,17 +84,17 @@ public static ActionEvent globalAction;
                 break;
         }
     }
+
     public String getSessionid(){return  stringToken.toString();}
     public void sessionID(String session){
      ViewSwitcher.getInstance().stringToken.append(session);
     }
     public void setPerson(List<Person> new_person){this.people = new_person;}
     public List<Person> getPeople(){return this.people;}
-
     public List<Person> peopleFetch(int pageNumber, String lastname){
         PersonGateway pg = new PersonGateway("http://localhost:8080/people?pageNum=" + pageNumber +"&lastName="+lastname ,this.getSessionid());
         List<Person> people = pg.fetchPeople();
-         System.out.println("The people are: " + people.toString());
+         //System.out.println("The people are: " + people.toString());
         return people;
 
     }

@@ -88,7 +88,7 @@ public class Person {
     }
 
     /**
-     * allows you to set FristName
+     * allows you to set FirstName
      **/
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -96,19 +96,6 @@ public class Person {
     public String toString()
     {
         return firstName + " " + lastName + "  id:" + id + "  age:" +age+ "  dob:"+dateOfBirth;
-    }
-    public void save() throws PersonExceptions, IOException {
-        PersonGateway pg = new PersonGateway("http://localhost:8080/people", ViewSwitcher.getInstance().getSessionid());
-        PersonGateway pg1 = new PersonGateway("http://localhost:8080/people/1", ViewSwitcher.getInstance().getSessionid());
-        // determine if I am a new record or not. call add if new, otherwise update
-        if(getId() == NEW_PERSON) {
-            // insert
-         //   int newId = pg.insertPerson(this);
-         //   this.setId(newId);
-        } else {
-            // update
-          //  pg1.Update(this);
-        }
     }
 
 }

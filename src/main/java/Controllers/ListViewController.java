@@ -6,13 +6,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import backend.model.Person;
+import org.apache.logging.log4j.core.config.Property;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,17 +34,42 @@ public class ListViewController implements Initializable {
     @FXML
     private TextField newPID;
 
-    public List<Person> people  = ViewSwitcher.getInstance().peopleFetch(1,"");
+    @FXML
+    private TableColumn<Person,String> idCol;
 
     @FXML
-    public ListView<Person> listview;
-    public ObservableList<Person> person=
-            FXCollections.observableArrayList(people);
+    private TableColumn first_name;
+
+    @FXML
+    private TableColumn last_name;
+
+    @FXML
+    private TableColumn age;
+
+    @FXML
+    private TableColumn DOB;
+
+    @FXML
+    private TableColumn last_modified;
+
+    public List<Person> people  = ViewSwitcher.getInstance().peopleFetch(1,"");
+
+
+    @FXML
+    public TableView<Person> tableView;
+    public ObservableList<Person> person = FXCollections.observableArrayList(people);
     public static int selectedIndex=-1;
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-        listview.setItems(person);
+            idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            first_name.setCellValueFactory(new PropertyValueFactory<>("first_name"));
+             last_name.setCellValueFactory(new PropertyValueFactory<>("last_name"));
+             age.setCellValueFactory(new PropertyValueFactory<>("age"));
+             DOB.setCellValueFactory(new PropertyValueFactory<>("birth_date"));
+             last_modified.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
+
+            tableView.setItems(person);
 
 
     }
@@ -64,7 +89,7 @@ public class ListViewController implements Initializable {
         List<Person> people  = ViewSwitcher.getInstance().peopleFetch(currPageNumber,searchText);
         person.clear();
         person.setAll(people);
-        listview.refresh();
+        tableView.refresh();
     }
 
     @FXML
@@ -76,8 +101,8 @@ public class ListViewController implements Initializable {
         List<Person> newPeople  = ViewSwitcher.getInstance().peopleFetch(currPageNumber,searchText);
         person.clear();
         person= FXCollections.observableArrayList(newPeople);
-        listview.refresh();
-        listview.setItems(person);
+       tableView.refresh();
+        tableView.setItems(person);
    }
     @FXML
     public void Prev(ActionEvent event) {
@@ -89,8 +114,8 @@ public class ListViewController implements Initializable {
             List<Person> newPeople = ViewSwitcher.getInstance().peopleFetch(currPageNumber, searchText);
             person.clear();
             person = FXCollections.observableArrayList(newPeople);
-            listview.refresh();
-            listview.setItems(person);
+            tableView.refresh();
+            tableView.setItems(person);
         }
     }
 
@@ -112,7 +137,7 @@ public class ListViewController implements Initializable {
             if(matchFound){
                 filteredList.add(person);
                 ObservableList<Person> person1 = FXCollections.observableArrayList(filteredList);
-                listview.setItems(person1);
+                tableView.setItems(person1);
             }
 
         }
@@ -123,13 +148,13 @@ public class ListViewController implements Initializable {
      **/
     public void setOnMouseClicked(MouseEvent event) {
         if (event.getClickCount() == 2){
-            selectedIndex = listview.getSelectionModel().getSelectedIndex();
+            selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             String fName = person.get(selectedIndex).getFirst_name();
             String lName = person.get(selectedIndex).getLast_name();
             logger.info("READING <" + fName + " " + lName + ">");
             update.fire();
         }
-        selectedIndex = listview.getSelectionModel().getSelectedIndex();
+        selectedIndex = tableView.getSelectionModel().getSelectedIndex();
     }
 
     /**
@@ -200,7 +225,7 @@ public class ListViewController implements Initializable {
                }
            }
            person.remove(selectedIndex);
-           listview.refresh();
+           tableView.refresh();
            logger.info("DELETING <" + fName + " " + lName + ">");
        }
        catch (Exception e)

@@ -96,11 +96,8 @@ public class PersonGateway {
     }
 
     public void Update(Person person, int OldId) throws IOException {
-        // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
-        System.out.println("INSIDE UPDATE PERSON PGATEWAYYY " + person);
         CloseableHttpResponse response = null;
         CloseableHttpClient httpclient = null;
-
         httpclient = HttpClients.createDefault();
         JSONObject requestJson = new JSONObject();
         HttpPut httpPut = new HttpPut(wsURL + "/" + OldId);
@@ -114,8 +111,6 @@ public class PersonGateway {
         requestJson.put("age", person.getAge());
         requestJson.put("birth_date", person.getBirth_date());
         requestJson.put("lastModified", person.getLastModified());
-        System.out.println("-------------------------------------------------->  " + person.getLastModified());
-
 
         String updateString = requestJson.toString();
 
@@ -140,16 +135,14 @@ public class PersonGateway {
 
     public int insertPerson(Person person) throws IOException {
         int respondID = 0;
-        System.out.println("inside person gatway, person : " + person);
-        // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
         CloseableHttpResponse response = null;
         CloseableHttpClient httpclient = null;
         httpclient = HttpClients.createDefault();
-        // assemble credentials into a JSON encoded string
 
         JSONObject requestJson = new JSONObject();
+
         //--------------------------------------------------------------------------------
-        // TO TEST FOR 400 ERROR --> change "firstName" to "fstName"
+
 
         System.out.println("this is the getter test: " + person.getFirst_name());
         requestJson.put("first_name", person.getFirst_name());
@@ -158,23 +151,16 @@ public class PersonGateway {
         requestJson.put("birth_date", person.getBirth_date());
         String updateString = requestJson.toString();
         HttpPost httpPost = new HttpPost(wsURL);
+
         //--------------------------------------------------------------------------------
-//        System.out.println("this is the updateString in insert pgatewayn" + updateString);
+
         httpPost.setHeader("Authorization", sessionId);
         StringEntity stringEntity = new StringEntity(updateString);
         httpPost.setEntity(stringEntity);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
-//        System.out.println("Executing request " + httpPost.getRequestLine());
         response = httpclient.execute(httpPost);
-//        String responseString = waitForResponseAsString(httpPost);
-//        try {
-//            JSONObject responseJSON = new JSONObject(responseString);
-//            respondID = responseJSON.getInt("id");
-//        }catch (Exception e){
-//
-//        }
-        //For testing
+
         if (response.getStatusLine().getStatusCode() == 200){
             System.out.println("Response Code: " + response.getStatusLine());
         }
@@ -186,18 +172,12 @@ public class PersonGateway {
 
 
     public void deletePerson(Person person) throws IOException {
-        // swiped from https://hc.apache.org/httpcomponents-client-ga/quickstart.html
         CloseableHttpResponse response = null;
         CloseableHttpClient httpclient = null;
         httpclient = HttpClients.createDefault();
-        // TO TEST FOR 404 ERROR  --> Try to delete the person in ListViewController that does not have an id of 1.
-        //--------------------------------------------------------------------------------
-        System.out.println("inside delete");
         HttpDelete httpDelete = new HttpDelete(wsURL + "/" + person.getId());
         System.out.println(httpDelete);
         //--------------------------------------------------------------------------------
-        // TO TEST FOR 401 ERROR  --> change sessionID to the var seshtoken
-        String seshtoken = "i am a sesh token";
         httpDelete.setHeader("Authorization", sessionId);
         response = httpclient.execute(httpDelete);
         System.out.println("RESPOSE: " + response.getStatusLine());

@@ -59,13 +59,10 @@ public class PersonGatewayDB {
         try{
             st = connection.prepareStatement("select * from users where user_name = ?",
                     PreparedStatement.RETURN_GENERATED_KEYS);
-
             st.setString(1,username);
             rows= st.executeQuery();
             rows.first();
-
             loginModel credentials = new loginModel(rows.getInt("id"), rows.getString("user_name"), rows.getString("password"));
-
             return credentials;
 
         }catch (SQLException e1){
@@ -143,8 +140,6 @@ public class PersonGatewayDB {
     }
 
 
-
-
     public FetchResults fetchPeople(int pageNum, String searchText) {
         PreparedStatement st = null;
         ResultSet rows = null;
@@ -193,9 +188,7 @@ public class PersonGatewayDB {
         }
     }
 
-    // crud functions
     public int insertPerson(Person person, int UserID) throws PersonException {
-        // use connection to insert a person in the db
         PreparedStatement st = null;
         ResultSet newKeys = null;
         int newId = 0;
@@ -213,8 +206,6 @@ public class PersonGatewayDB {
             newKeys = st.getGeneratedKeys();
             newKeys.first();
 
-            // set the person's id as the primary key returned from the db
-            // System.out.println("new person id is " + );
             newId = newKeys.getInt(1);
 
            st = connection.prepareStatement("insert into audit_trail (id, change_msg, changed_by, person_id, when_occurred) values (? , ? , ? , ?, ?)");
@@ -246,6 +237,7 @@ public class PersonGatewayDB {
         }
         return newId;
     }
+
     public void deletePerson(Person person) throws PersonException {
         if(person.getId() == person.NEW_PERSON)
             throw new PersonException("Not able to delete a non existing person");
@@ -269,6 +261,7 @@ public class PersonGatewayDB {
             }
         }
     }
+
     public void updatePerson(Person person,String message, int UserID) throws PersonException {
         if(person.getId() == Person.NEW_PERSON)
             throw new PersonException("A new person must be inserted first.");
