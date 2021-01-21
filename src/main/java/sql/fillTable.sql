@@ -11,7 +11,7 @@ BEGIN
 
     setLoop : LOOP
         SET personfirstNameId = (SELECT 1 + ROUND(RAND() * 49, 0));
-        SET personLastnameId = (SELECT 1 + ROUND(RAND() * 49, 0));
+        SET persconLastnameId = (SELECT 1 + ROUND(RAND() * 49, 0));
         SET personDOB = (SELECT date_format(from_unixtime(RAND() * (unix_timestamp('1950-01-01') - unix_timestamp('2000-01-01')) + unix_timestamp('2000-01-01')), '%Y-%m-%d'));
         SET personAge = (SELECT TIMESTAMPDIFF(YEAR, personDOB, CURDATE()));
         SET personFirstname = (SELECT firstnames.first_name FROM firstnames WHERE firstnames.id = personfirstNameId);
