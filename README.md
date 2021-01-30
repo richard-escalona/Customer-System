@@ -1,0 +1,2 @@
+# Customer-System
+This is a 3-tier Spring Boot customer management desktop application with implemented CRUDS functionalities that enables various administrators to manage accounts to their liking. PhpMyAdmin was utilized to handle the administration of MySQL and database. I Implemented optimistic locking, audit trails, pattern search and pagination for ease of use and managing concurrent multi-user scenarios. JavaFX along with CSS was used to develop the front-end and java with SQL for the back-end.
